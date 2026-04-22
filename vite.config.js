@@ -11,6 +11,5 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true
   },
-  // Uncomment and set your repository name for GitHub Pages deployment
-  // base: '/Proyecto-Laboria-Damián/',
+  base: '/Proyect-Laboria-Damian/',
 });
