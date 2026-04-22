@@ -6,20 +6,20 @@ const FAQPage = () => {
 
   const faqs = [
     {
-      question: "¿Qué es Laboria-V2?",
-      answer: "Laboria-V2 es un portal web de búsqueda de empleo y formación profesional orientado al mercado español. Combina ofertas laborales con cursos de formación para ofrecer un desarrollo profesional integral."
+      question: "¿Qué es Laboria?",
+      answer: "Laboria es un portal web de búsqueda de empleo y formación profesional orientado al mercado español. Combina ofertas laborales con cursos de formación para ofrecer un desarrollo profesional integral."
     },
     {
-      question: "¿Es gratuito usar Laboria-V2?",
-      answer: "Sí, Laboria-V2 es completamente gratuito para usuarios que buscan empleo o formación. No cobramos por acceder a las ofertas de trabajo o información de cursos."
+      question: "¿Es gratuito usar Laboria?",
+      answer: "Sí, Laboria es completamente gratuito para usuarios que buscan empleo o formación. No cobramos por acceder a las ofertas de trabajo o información de cursos."
     },
     {
       question: "¿Cómo puedo aplicar a una oferta de empleo?",
       answer: "Actualmente, el botón de aplicación es una simulación en el frontend. En una versión completa, este botón te redirigiría al proceso de aplicación de la empresa o a un formulario de contacto."
     },
     {
-      question: "¿Los cursos son impartidos por Laboria-V2?",
-      answer: "No, Laboria-V2 actúa como un directorio de cursos de terceros (Udemy, Coursera, Platzi, etc.). Al hacer clic en un curso, serás redirigido a la plataforma original donde se imparte."
+      question: "¿Los cursos son impartidos por Laboria?",
+      answer: "No, Laboria actúa como un directorio de cursos de terceros (Udemy, Coursera, Platzi, etc.). Al hacer clic en un curso, serás redirigido a la plataforma original donde se imparte."
     },
     {
       question: "¿Con qué frecuencia se actualizan las ofertas de empleo?",
@@ -30,19 +30,19 @@ const FAQPage = () => {
       answer: "Esta funcionalidad está planificada para futuras versiones. Permitirá guardar ofertas y cursos en tu perfil usando localStorage para un acceso rápido."
     },
     {
-      question: "¿Laboria-V2 tiene versión móvil?",
-      answer: "El diseño de Laboria-V2 es completamente responsive y se adapta a dispositivos móviles, tablets y escritorio. No necesitas descargar una app adicional."
+      question: "¿Laboria tiene versión móvil?",
+      answer: "El diseño de Laboria es completamente responsive y se adapta a dispositivos móviles, tablets y escritorio. No necesitas descargar una app adicional."
     },
     {
-      question: "¿Cómo puedo contactar con Laboria-V2?",
-      answer: "Puedes contactarnos a través del email contacto@laboria-v2.com o visitando nuestra página 'Acerca de' para más información."
+      question: "¿Cómo puedo contactar con Laboria?",
+      answer: "Puedes contactarnos a través del email contacto@laboria.com o visitando nuestra página 'Acerca de' para más información."
     },
     {
-      question: "¿Ofrece Laboria-V2 servicios de orientación laboral?",
+      question: "¿Ofrece Laboria servicios de orientación laboral?",
       answer: "Actualmente no ofrecemos servicios de orientación laboral directa, pero planeamos incorporar recursos y guías para ayudar en la búsqueda de empleo en futuras actualizaciones."
     },
     {
-      question: "¿Puedo publicar ofertas de empleo en Laboria-V2?",
+      question: "¿Puedo publicar ofertas de empleo en Laboria?",
       answer: "Esta funcionalidad está en desarrollo. En el futuro, las empresas podrán registrar sus cuentas y publicar ofertas de empleo directamente en la plataforma."
     }
   ];
@@ -57,7 +57,7 @@ const FAQPage = () => {
         <header className="faq-header">
           <h1>Preguntas Frecuentes</h1>
           <p className="faq-subtitle">
-            Encuentra respuestas a las dudas más comunes sobre Laboria-V2
+            Encuentra respuestas a las dudas más comunes sobre Laboria 
           </p>
         </header>
 
@@ -87,7 +87,7 @@ const FAQPage = () => {
           <p>
             Si tienes alguna otra pregunta, no dudes en contactarnos.
           </p>
-          <a href="mailto:contacto@laboria-v2.com" className="btn btn-primary">
+          <a href="mailto:contacto@laboria .com" className="btn btn-primary">
             Contactar con soporte
           </a>
         </section>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './RegisterPage.css';
+import logoNegro from '../../assets/img/Laboria_fondo_Negro.png';
 
 const RegisterPage = () => {
   const [step, setStep] = useState(1);
@@ -116,9 +117,9 @@ const RegisterPage = () => {
       <div className="container">
         <div className="auth-card">
           <header className="auth-header">
-            <img src={logoNegro} alt="Laboria-V2" className="auth-logo" />
+            <img src={logoNegro} alt="Laboria" className="auth-logo" />
             <h1>Registro</h1>
-            <p className="auth-subtitle">Crea tu cuenta en Laboria-V2</p>
+            <p className="auth-subtitle">Crea tu cuenta en Laboria</p>
           </header>
 
           {step === 1 && (

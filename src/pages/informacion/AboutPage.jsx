@@ -6,7 +6,7 @@ const AboutPage = () => {
     <div className="about-page">
       <div className="container">
         <header className="about-header">
-          <h1>Acerca de Laboria-V2</h1>
+          <h1>Acerca de Laboria</h1>
           <p className="about-subtitle">
             Tu portal de empleo y formación profesional en España
           </p>
@@ -15,14 +15,14 @@ const AboutPage = () => {
         <section className="about-section">
           <h2>Nuestra Misión</h2>
           <p>
-            Laboria-V2 nace con la misión de conectar profesionales españoles con oportunidades laborales 
+            Laboria nace con la misión de conectar profesionales españoles con oportunidades laborales 
             y formación de calidad. Creemos que el desarrollo profesional es un camino continuo que 
             combina experiencia laboral con aprendizaje constante.
           </p>
         </section>
 
         <section className="about-section">
-          <h2>Por qué Laboria-V2</h2>
+          <h2>Por qué Laboria</h2>
           <div className="features-grid">
             <div className="feature-item">
               <div className="feature-icon">💼</div>
@@ -88,7 +88,7 @@ const AboutPage = () => {
           </p>
           <div className="contact-info">
             <div className="contact-item">
-              <strong>Email:</strong> contacto@laboria-v2.com
+              <strong>Email:</strong> contacto@laboria.com
             </div>
             <div className="contact-item">
               <strong>Ubicación:</strong> Madrid, España

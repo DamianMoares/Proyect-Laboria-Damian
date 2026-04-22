@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import logoNegro from '../../assets/img/Laboria_Fondo_Negro.png';
 
 const Home = () => {
   return (
     <div className="home-page">
       <header className="hero">
         <div className="hero-content">
-          <img src="./assets/img/Laboria_Fondo_Negro.png" alt="Logo Laboria" className="hero-logo" />
+          <img src={logoNegro} alt="Logo Laboria" className="hero-logo" />
           
           <p className="hero-subtitle">
             Tu portal de empleo y formación profesional en España
@@ -93,7 +94,7 @@ const Home = () => {
 
       <footer className="home-footer">
         <div className="container">
-          <p>&copy; 2024 Laboria-V2. Todos los derechos reservados.</p>
+          <p>&copy; 2024 Laboria . Todos los derechos reservados.</p>
           <div className="footer-links">
             <Link to="/acerca-de">Acerca de</Link>
             <Link to="/faq">FAQ</Link>

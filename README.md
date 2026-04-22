@@ -1,10 +1,10 @@
-# Laboria-V2
+# Laboria 
 
 Portal web de búsqueda de empleo y formación profesional orientado al mercado español.
 
 ## Descripción
 
-Laboria-V2 es un portal que combina búsqueda de ofertas laborales con búsqueda de cursos de formación. Se diferencia de otros portales al integrar ambas vertientes en una sola plataforma, permitiendo a los usuarios encontrar empleo y mejorar sus habilidades profesionalmente.
+Laboria  es un portal que combina búsqueda de ofertas laborales con búsqueda de cursos de formación. Se diferencia de otros portales al integrar ambas vertientes en una sola plataforma, permitiendo a los usuarios encontrar empleo y mejorar sus habilidades profesionalmente.
 
 ## Características
 
@@ -39,7 +39,7 @@ npm run preview
 ## Estructura del Proyecto
 
 ```
-Laboria-V2/
+Laboria /
 ├── DOC/                          # Documentación de mejoras
 ├── public/                       # Assets estáticos
 ├── src/
@@ -98,5 +98,5 @@ El proyecto incluye datos mock en formato JSON:
 
 ## Licencia
 
-© 2024 Laboria-V2. Todos los derechos reservados.
+© 2024 Laboria . Todos los derechos reservados.
 # Proyect-Laboria-Damian

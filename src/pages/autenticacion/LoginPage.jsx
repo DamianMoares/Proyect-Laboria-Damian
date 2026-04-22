@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './LoginPage.css';
+import logoNegro from '../../assets/img/Laboria_fondo_Negro.png';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -38,9 +39,9 @@ const LoginPage = () => {
       <div className="container">
         <div className="auth-card">
           <header className="auth-header">
-            <img src={logoNegro} alt="Laboria-V2" className="auth-logo" />
+            <img src={logoNegro} alt="Laboria" className="auth-logo" />
             <h1>Iniciar Sesión</h1>
-            <p className="auth-subtitle">Accede a tu cuenta de Laboria-V2</p>
+            <p className="auth-subtitle">Accede a tu cuenta de Laboria</p>
           </header>
 
           <form className="auth-form" onSubmit={handleSubmit}>

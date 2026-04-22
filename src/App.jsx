@@ -41,7 +41,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="container navbar-container">
         <Link to="/" className="navbar-logo">
-          <img src={logoBlanco} alt="Laboria-V2" className="navbar-logo-img" />
+          <img src={logoBlanco} alt="Laboria " className="navbar-logo-img" />
         </Link>
         <ul className="navbar-menu">
           <li className="navbar-item">
@@ -135,7 +135,7 @@ function App() {
 
           <footer className="app-footer">
             <div className="container">
-              <p>&copy; 2024 Laboria-V2. Todos los derechos reservados.</p>
+              <p>&copy; 2024 Laboria . Todos los derechos reservados.</p>
             </div>
           </footer>
         </div>

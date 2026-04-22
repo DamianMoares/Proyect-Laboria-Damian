@@ -69,7 +69,7 @@ const DashboardPage = () => {
     <div className="panel-page">
       <div className="container">
         <header className="panel-header">
-          <img src={logoNegro} alt="Laboria-V2" className="panel-logo" />
+          <img src={logoNegro} alt="Laboria " className="panel-logo" />
           <h1>Panel de {isCandidate() ? profile.firstName || user.name : profile.companyName || user.name}</h1>
           <p className="panel-subtitle">
             Gestiona tu cuenta y actividades

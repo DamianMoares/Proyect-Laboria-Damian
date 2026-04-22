@@ -13,5 +13,5 @@ export default defineConfig({
   },
   // Using HashRouter, so base path can be '/' (root)
   // No need for repository-specific base path
-  base: '/',
+  base: '/Proyect-Laboria-Damian/',
 });
