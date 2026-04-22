@@ -1,5 +1,5 @@
-/* DashboardPage Styles */
-.dashboard-page {
+/* PanelPage Styles */
+.panel-page {
   min-height: 100vh;
   padding: var(--spacing-xl) 0;
 }
@@ -15,7 +15,7 @@
   margin-bottom: var(--spacing-md);
 }
 
-.dashboard-header {
+.panel-header {
   text-align: center;
   margin-bottom: var(--spacing-2xl);
   padding: var(--spacing-xl) 0;
@@ -23,33 +23,33 @@
   border-bottom: 2px solid var(--color-gold);
 }
 
-.dashboard-logo {
+.panel-logo {
   max-width: 200px;
   height: auto;
   margin-bottom: var(--spacing-lg);
 }
 
-.dashboard-header h1 {
+.panel-header h1 {
   font-size: 2rem;
   color: var(--color-gold);
   margin-bottom: var(--spacing-sm);
 }
 
-.dashboard-subtitle {
+.panel-subtitle {
   font-size: 1.1rem;
   color: var(--color-text-secondary);
 }
 
-.dashboard-content {
+.panel-content {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.dashboard-section {
+.panel-section {
   margin-bottom: var(--spacing-2xl);
 }
 
-.dashboard-section h2 {
+.panel-section h2 {
   color: var(--color-gold);
   font-size: 1.5rem;
   margin-bottom: var(--spacing-lg);
@@ -57,13 +57,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.dashboard-grid {
+.panel-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-lg);
 }
 
-.dashboard-card {
+.panel-card {
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
@@ -73,7 +73,7 @@
   transition: all var(--transition-normal);
 }
 
-.dashboard-card:hover {
+.panel-card:hover {
   border-color: var(--color-gold);
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
@@ -84,26 +84,26 @@
   margin-bottom: var(--spacing-md);
 }
 
-.dashboard-card h3 {
+.panel-card h3 {
   color: var(--color-gold);
   font-size: 1.25rem;
   margin-bottom: var(--spacing-sm);
 }
 
-.dashboard-card p {
+.panel-card p {
   color: var(--color-text-secondary);
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.dashboard-stats {
+.panel-stats {
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-xl);
 }
 
-.dashboard-stats h3 {
+.panel-stats h3 {
   color: var(--color-gold);
   font-size: 1.25rem;
   margin-bottom: var(--spacing-lg);
@@ -141,15 +141,15 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .dashboard-header h1 {
+  .panel-header h1 {
     font-size: 1.5rem;
   }
 
-  .dashboard-subtitle {
+  .panel-subtitle {
     font-size: 1rem;
   }
 
-  .dashboard-grid {
+  .panel-grid {
     grid-template-columns: 1fr;
   }
 

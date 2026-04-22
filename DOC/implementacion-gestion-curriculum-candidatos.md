@@ -37,7 +37,7 @@ Se ha implementado un sistema completo de gestión de currículum para candidato
 
 ### Archivos Actualizados
 - `src/pages/JobDetailPage.jsx` - Integración con currículum personalizado al aplicar
-- `src/pages/DashboardPage.jsx` - Añadido enlace a gestión de currículum
+- `src/pages/PanelPage.jsx` - Añadido enlace a gestión de currículum
 - `src/pages/CandidateProfilePage.jsx` - Muestra currículum del candidato
 - `src/pages/ProfilePage.css` - Estilos para curriculum-list y curriculum-item
 - `src/App.jsx` - Importación y ruta /curriculum
@@ -165,9 +165,9 @@ const CandidateProfilePage = () => {
 };
 ```
 
-### DashboardPage.jsx (enlace a gestión)
+### PanelPage.jsx (enlace a gestión)
 ```jsx
-<Link to="/curriculum" className="dashboard-card">
+<Link to="/curriculum" className="panel-card">
   <div className="card-icon">📄</div>
   <h3>Gestión de Currículum</h3>
   <p>Configura tu currículum personalizado</p>
@@ -187,7 +187,7 @@ import CurriculumPage from './pages/CurriculumPage';
 - **Currículum estructurado**: Los candidatos pueden organizar su información en secciones claras.
 - **Personalización**: Checkbox para seleccionar qué elementos enviar a cada oferta.
 - **Visualización en perfil**: El currículum se muestra en el perfil del candidato.
-- **Acceso fácil**: Enlace directo desde el dashboard y el perfil.
+- **Acceso fácil**: Enlace directo desde el panel y el perfil.
 
 ### Mantenibilidad
 - **Componente modular**: CurriculumPage independiente y reutilizable.

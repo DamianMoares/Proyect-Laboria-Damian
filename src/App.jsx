@@ -33,7 +33,7 @@ function Navbar() {
   };
 
   const handleProfileClick = () => {
-    navigate('/dashboard');
+    navigate('/panel');
   };
 
   return (
@@ -121,7 +121,7 @@ function App() {
               <Route path="/registro" element={<RegisterPage />} />
               <Route path="/perfil/candidato" element={<CandidateProfilePage />} />
               <Route path="/perfil/empresa" element={<CompanyProfilePage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/panel" element={<DashboardPage />} />
               <Route path="/publicar-oferta" element={<PostJobPage />} />
               <Route path="/mis-ofertas" element={<MyJobsPage />} />
               <Route path="/publicar-curso" element={<PostCoursePage />} />

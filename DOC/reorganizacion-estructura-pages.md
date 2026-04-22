@@ -41,9 +41,9 @@ src/pages/
 │   ├── AboutPage.css
 │   ├── FAQPage.jsx
 │   └── FAQPage.css
-├── panel/                   # Dashboard unificado
-│   ├── DashboardPage.jsx
-│   └── DashboardPage.css
+├── panel/                   # Panel unificado
+│   ├── PanelPage.jsx
+│   └── PanelPage.css
 ├── curriculo/               # Gestión de currículum
 │   ├── CurriculumPage.jsx
 │   └── CurriculumPage.css
@@ -76,7 +76,7 @@ src/pages/
 - `ProfilePage.css` → `perfiles/`
 - `AboutPage.jsx` + `.css` → `informacion/`
 - `FAQPage.jsx` + `.css` → `informacion/`
-- `DashboardPage.jsx` + `.css` → `panel/`
+- `PanelPage.jsx` + `.css` → `panel/`
 - `CurriculumPage.jsx` + `.css` → `curriculo/`
 - `MyApplicationsPage.jsx` → `aplicaciones/`
 - `Home.jsx` + `.css` → `inicio/`
@@ -133,7 +133,7 @@ import '../compartidos/MyListingsPage.css';
 - CourseDetailPage.jsx
 - JobSearchPage.jsx
 - CourseSearchPage.jsx
-- DashboardPage.jsx
+- PanelPage.jsx
 - CurriculumPage.jsx
 - MyApplicationsPage.jsx
 - SavedCoursesPage.jsx

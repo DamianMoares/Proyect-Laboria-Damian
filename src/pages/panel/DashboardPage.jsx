@@ -8,10 +8,10 @@ const DashboardPage = () => {
 
   if (!user) {
     return (
-      <div className="dashboard-page not-authorized">
+      <div className="panel-page not-authorized">
         <div className="container">
           <h1>No autorizado</h1>
-          <p>Debes iniciar sesión para ver tu dashboard.</p>
+          <p>Debes iniciar sesión para ver tu panel.</p>
           <Link to="/login" className="btn btn-primary">Iniciar Sesión</Link>
         </div>
       </div>
@@ -20,7 +20,7 @@ const DashboardPage = () => {
 
   const profile = user.profile || {};
 
-  // Configuración de pestañas por rol (para mostrar en el dashboard)
+  // Configuración de pestañas por rol (para mostrar en el panel)
   const getCandidateTabs = () => [
     { id: 'jobs', label: 'Empleos', icon: '💼', link: '/empleos' },
     { id: 'courses', label: 'Cursos', icon: '📚', link: '/cursos' },
@@ -65,22 +65,22 @@ const DashboardPage = () => {
   const tabs = getTabs();
 
   return (
-    <div className="dashboard-page">
+    <div className="panel-page">
       <div className="container">
-        <header className="dashboard-header">
-          <img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="dashboard-logo" />
-          <h1>Dashboard de {isCandidate() ? profile.firstName || user.name : profile.companyName || user.name}</h1>
-          <p className="dashboard-subtitle">
+        <header className="panel-header">
+          <img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="panel-logo" />
+          <h1>Panel de {isCandidate() ? profile.firstName || user.name : profile.companyName || user.name}</h1>
+          <p className="panel-subtitle">
             Gestiona tu cuenta y actividades
           </p>
         </header>
 
-        <div className="dashboard-content">
-          <div className="dashboard-section">
+        <div className="panel-content">
+          <div className="panel-section">
             <h2>Resumen</h2>
-            <div className="dashboard-grid">
+            <div className="panel-grid">
               {tabs.map(tab => (
-                <Link key={tab.id} to={tab.link} className="dashboard-card">
+                <Link key={tab.id} to={tab.link} className="panel-card">
                   <div className="card-icon">{tab.icon}</div>
                   <h3>{tab.label}</h3>
                   <p>Accede a la sección de {tab.label.toLowerCase()}</p>
@@ -89,7 +89,7 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="dashboard-stats">
+          <div className="panel-stats">
             <h3>Estadísticas Rápidas</h3>
             <div className="stats-grid">
               {isCandidate() && (

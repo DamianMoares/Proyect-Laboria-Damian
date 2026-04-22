@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import EditProfileModal from '../../components/EditProfileModal';
 import './ProfilePage.css';
 
 const CandidateProfilePage = () => {
-  const { user, logout, isCandidate } = useAuth();
+  const { user, logout, isCandidate, deleteAccount } = useAuth();
+  const navigate = useNavigate();
   const [curriculum, setCurriculum] = useState({
     experience: [],
     education: [],
@@ -12,6 +14,8 @@ const CandidateProfilePage = () => {
     projects: [],
     languages: []
   });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     if (user && isCandidate()) {
@@ -213,8 +217,11 @@ const CandidateProfilePage = () => {
               <Link to="/curriculum" className="sidebar-action">
                 Gestionar Currículum
               </Link>
-              <button className="sidebar-action">
+              <button className="sidebar-action" onClick={() => setIsEditModalOpen(true)}>
                 Editar Perfil
+              </button>
+              <button className="sidebar-action delete-account" onClick={() => setIsDeleteModalOpen(true)}>
+                Eliminar Cuenta
               </button>
             </div>
 
@@ -232,6 +239,40 @@ const CandidateProfilePage = () => {
           </aside>
         </div>
       </div>
+
+      <EditProfileModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        userType="candidate" 
+      />
+
+      {isDeleteModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsDeleteModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Eliminar Cuenta</h2>
+              <button className="modal-close" onClick={() => setIsDeleteModalOpen(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <p>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible y se perderán todos tus datos.</p>
+              <div className="form-actions">
+                <button className="btn btn-secondary" onClick={() => setIsDeleteModalOpen(false)}>
+                  Cancelar
+                </button>
+                <button 
+                  className="btn btn-danger" 
+                  onClick={() => {
+                    deleteAccount();
+                    navigate('/');
+                  }}
+                >
+                  Confirmar Eliminación
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

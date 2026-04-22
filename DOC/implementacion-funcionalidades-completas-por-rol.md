@@ -7,43 +7,43 @@ Aunque se había implementado el sistema de autenticación con múltiples roles,
 - **Empresas (empleados)**: No podían publicar ni gestionar ofertas de empleo.
 - **Empresas (estudiantes)**: No podían publicar ni gestionar cursos.
 - **Empresas (híbridas)**: No tenían acceso a ninguna funcionalidad de gestión.
-- **Todos los roles**: No tenían un dashboard centralizado para acceder a sus funcionalidades.
+- **Todos los roles**: No tenían un panel centralizado para acceder a sus funcionalidades.
 
 ## Solución Implementada
 
 Se ha implementado el sistema completo de funcionalidades para cada rol, siguiendo el patrón de las páginas existentes:
 
 ### Para Candidatos
-- **Dashboard**: Acceso a búsqueda de empleo/cursos, aplicaciones y cursos guardados.
+- **Panel**: Acceso a búsqueda de empleo/cursos, aplicaciones y cursos guardados.
 - **Aplicar a ofertas**: Funcionalidad en JobDetailPage con persistencia en localStorage.
 - **Guardar cursos**: Funcionalidad en CourseDetailPage con persistencia en localStorage.
 - **Mis Aplicaciones**: Página para ver y retirar aplicaciones a ofertas.
 - **Cursos Guardados**: Página para ver y eliminar cursos guardados.
 
 ### Para Empresas (Empleados)
-- **Dashboard**: Acceso a publicación y gestión de ofertas.
+- **Panel**: Acceso a publicación y gestión de ofertas.
 - **Publicar Oferta**: Formulario completo para crear ofertas de empleo.
 - **Mis Ofertas**: Página para ver y eliminar ofertas publicadas.
 
 ### Para Empresas (Estudiantes)
-- **Dashboard**: Acceso a publicación y gestión de cursos.
+- **Panel**: Acceso a publicación y gestión de cursos.
 - **Publicar Curso**: Formulario completo para crear cursos.
 - **Mis Cursos**: Página para ver y eliminar cursos publicados.
 
 ### Para Empresas (Híbridas)
-- **Dashboard**: Acceso a todas las funcionalidades (ofertas y cursos).
+- **Panel**: Acceso a todas las funcionalidades (ofertas y cursos).
 - **Publicar Oferta/Curso**: Acceso a ambos formularios de publicación.
 - **Mis Ofertas/Cursos**: Acceso a ambas páginas de gestión.
 
 ### General
-- **Dashboard Unificado**: Página que adapta contenido según rol del usuario.
-- **Navbar Dinámico**: Botón "Mi Perfil" redirige al dashboard.
+- **Panel Unificado**: Página que adapta contenido según rol del usuario.
+- **Navbar Dinámico**: Botón "Mi Perfil" redirige al panel.
 - **Persistencia**: Datos guardados en localStorage.
 
 ## Archivos Modificados/Creados
 
 ### Nuevas Páginas
-- `src/pages/DashboardPage.jsx` + `.css` - Dashboard unificado por rol con tarjetas de acceso.
+- `src/pages/PanelPage.jsx` + `.css` - Panel unificado por rol con tarjetas de acceso.
 - `src/pages/PostJobPage.jsx` - Formulario para publicar ofertas de empleo.
 - `src/pages/MyJobsPage.jsx` - Gestión de ofertas publicadas por la empresa.
 - `src/pages/PostCoursePage.jsx` - Formulario para publicar cursos.
@@ -62,31 +62,31 @@ Se ha implementado el sistema completo de funcionalidades para cada rol, siguien
 - `src/pages/CourseDetailPage.css` - Estilos para botón guardar.
 
 ### Configuración
-- `src/App.jsx` - Importaciones de nuevas páginas, rutas actualizadas, navbar redirige a dashboard.
+- `src/App.jsx` - Importaciones de nuevas páginas, rutas actualizadas, navbar redirige a panel.
 
 ## Código Relevente
 
-### DashboardPage.jsx (adaptación por rol)
+### PanelPage.jsx (adaptación por rol)
 ```jsx
-const DashboardPage = () => {
+const PanelPage = () => {
   const { isCandidate, isCompanyEmployees, isCompanyStudents, isCompanyHybrid } = useAuth();
 
   return (
-    <div className="dashboard-page">
+    <div className="panel-page">
       {isCandidate() && (
-        <div className="dashboard-section">
-          <Link to="/empleos" className="dashboard-card">Buscar Empleo</Link>
-          <Link to="/cursos" className="dashboard-card">Buscar Cursos</Link>
-          <Link to="/mis-aplicaciones" className="dashboard-card">Mis Aplicaciones</Link>
-          <Link to="/cursos-guardados" className="dashboard-card">Cursos Guardados</Link>
+        <div className="panel-section">
+          <Link to="/empleos" className="panel-card">Buscar Empleo</Link>
+          <Link to="/cursos" className="panel-card">Buscar Cursos</Link>
+          <Link to="/mis-aplicaciones" className="panel-card">Mis Aplicaciones</Link>
+          <Link to="/cursos-guardados" className="panel-card">Cursos Guardados</Link>
         </div>
       )}
       {isCompanyHybrid() && (
-        <div className="dashboard-section">
-          <Link to="/publicar-oferta" className="dashboard-card">Publicar Oferta</Link>
-          <Link to="/mis-ofertas" className="dashboard-card">Mis Ofertas</Link>
-          <Link to="/publicar-curso" className="dashboard-card">Publicar Curso</Link>
-          <Link to="/mis-cursos" className="dashboard-card">Mis Cursos</Link>
+        <div className="panel-section">
+          <Link to="/publicar-oferta" className="panel-card">Publicar Oferta</Link>
+          <Link to="/mis-ofertas" className="panel-card">Mis Ofertas</Link>
+          <Link to="/publicar-curso" className="panel-card">Publicar Curso</Link>
+          <Link to="/mis-cursos" className="panel-card">Mis Cursos</Link>
         </div>
       )}
     </div>
@@ -277,7 +277,7 @@ const MyJobsPage = () => {
 ### App.jsx (rutas actualizadas)
 ```jsx
 <Routes>
-  <Route path="/dashboard" element={<DashboardPage />} />
+  <Route path="/panel" element={<PanelPage />} />
   <Route path="/publicar-oferta" element={<PostJobPage />} />
   <Route path="/mis-ofertas" element={<MyJobsPage />} />
   <Route path="/publicar-curso" element={<PostCoursePage />} />
@@ -286,16 +286,16 @@ const MyJobsPage = () => {
   <Route path="/cursos-guardados" element={<SavedCoursesPage />} />
 </Routes>
 
-// Navbar actualizado para redirigir a dashboard
+// Navbar actualizado para redirigir a panel
 const handleProfileClick = () => {
-  navigate('/dashboard');
+  navigate('/panel');
 };
 ```
 
 ## Impacto de la Mejora
 
 ### UX
-- **Dashboard centralizado**: Cada rol tiene un punto de acceso a todas sus funcionalidades.
+- **Panel centralizado**: Cada rol tiene un punto de acceso a todas sus funcionalidades.
 - **Acciones intuitivas**: Botones de aplicar/guardar con feedback visual inmediato.
 - **Gestión completa**: Empresas pueden publicar y eliminar sus ofertas/cursos.
 - **Persistencia**: Datos se mantienen entre sesiones con localStorage.
@@ -307,7 +307,7 @@ const handleProfileClick = () => {
 - **Validación de roles**: Cada página verifica permisos del usuario.
 
 ### Escalabilidad
-- **Dashboard extensible**: Fácil añadir nuevas funcionalidades por rol.
+- **Panel extensible**: Fácil añadir nuevas funcionalidades por rol.
 - **LocalStorage preparado**: Estructura lista para migración a API real.
 - **Sistema de aplicaciones**: Preparado para añadir estados (aceptada/rechazada).
 - **Multi-rol híbrido**: Empresas híbridas acceden a todas las funcionalidades.

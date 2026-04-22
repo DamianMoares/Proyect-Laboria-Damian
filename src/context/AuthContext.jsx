@@ -66,6 +66,16 @@ export const AuthProvider = ({ children }) => {
     return { success: false, error: 'No hay usuario autenticado' };
   };
 
+  const deleteAccount = () => {
+    if (user) {
+      setUser(null);
+      localStorage.removeItem('laboria_user');
+      localStorage.removeItem(`curriculum_${user.id}`);
+      return { success: true };
+    }
+    return { success: false, error: 'No hay usuario autenticado' };
+  };
+
   const isCandidate = () => user?.role === 'candidate';
   const isCompanyEmployees = () => user?.role === 'company_employees';
   const isCompanyStudents = () => user?.role === 'company_students';
@@ -79,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateProfile,
+    deleteAccount,
     isCandidate,
     isCompanyEmployees,
     isCompanyStudents,

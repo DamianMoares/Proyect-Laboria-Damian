@@ -28,7 +28,7 @@ const MyJobsPage = () => {
         <div className="container">
           <h1>No autorizado</h1>
           <p>Esta página es solo para empresas que publican ofertas de empleo.</p>
-          <Link to="/dashboard" className="btn btn-primary">Volver al Dashboard</Link>
+          <Link to="/panel" className="btn btn-primary">Volver al Panel</Link>
         </div>
       </div>
     );

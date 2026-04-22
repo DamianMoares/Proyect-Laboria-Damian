@@ -89,9 +89,9 @@ Laboria-V2/
 <img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="hero-logo" />
 ```
 
-**DashboardPage.jsx:**
+**PanelPage.jsx:**
 ```jsx
-<img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="dashboard-logo" />
+<img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="panel-logo" />
 ```
 
 **LoginPage.jsx:**
@@ -124,9 +124,9 @@ Laboria-V2/
 }
 ```
 
-**DashboardPage.css:**
+**PanelPage.css:**
 ```css
-.dashboard-logo {
+.panel-logo {
   max-width: 200px;
   height: auto;
   margin-bottom: var(--spacing-lg);

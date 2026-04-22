@@ -302,6 +302,17 @@
   color: var(--color-gold);
 }
 
+.sidebar-action.delete-account {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.sidebar-action.delete-account:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
 .sidebar-action:last-child {
   margin-bottom: 0;
 }
