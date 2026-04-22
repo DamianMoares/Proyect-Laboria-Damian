@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Home.css';
 import logoNegro from '../../assets/img/Laboria_Fondo_Negro.png';
+import './Home.css';
 
 const Home = () => {
   return (

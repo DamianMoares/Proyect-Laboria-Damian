@@ -11,7 +11,6 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true
   },
-  // Using HashRouter, so base path can be '/' (root)
-  // No need for repository-specific base path
+  // GitHub Pages: base path must match repository name
   base: '/Proyect-Laboria-Damian/',
 });

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import './LoginPage.css';
 import logoNegro from '../../assets/img/Laboria_fondo_Negro.png';
+import './LoginPage.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
