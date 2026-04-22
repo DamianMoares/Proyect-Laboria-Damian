@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
-import logoNegro from '../../assets/img/Laboria_Fondo_Negro.png';
+import logoNegro from '../../assets/img/Laboria_fondo_Negro.png';
 import './DashboardPage.css';
 
 const DashboardPage = () => {

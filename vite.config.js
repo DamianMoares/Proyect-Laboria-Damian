@@ -11,5 +11,7 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true
   },
-  base: '/Proyect-Laboria-Damian/',
+  // Using HashRouter, so base path can be '/' (root)
+  // No need for repository-specific base path
+  base: '/',
 });

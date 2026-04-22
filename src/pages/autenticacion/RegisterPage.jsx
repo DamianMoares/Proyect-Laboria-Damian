@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import logoNegro from '../../assets/img/Laboria_Fondo_Negro.png';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
