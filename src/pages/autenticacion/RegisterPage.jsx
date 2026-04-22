@@ -116,7 +116,7 @@ const RegisterPage = () => {
       <div className="container">
         <div className="auth-card">
           <header className="auth-header">
-            <img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="auth-logo" />
+            <img src={logoNegro} alt="Laboria-V2" className="auth-logo" />
             <h1>Registro</h1>
             <p className="auth-subtitle">Crea tu cuenta en Laboria-V2</p>
           </header>

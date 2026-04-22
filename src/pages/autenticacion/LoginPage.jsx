@@ -38,7 +38,7 @@ const LoginPage = () => {
       <div className="container">
         <div className="auth-card">
           <header className="auth-header">
-            <img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="auth-logo" />
+            <img src={logoNegro} alt="Laboria-V2" className="auth-logo" />
             <h1>Iniciar Sesión</h1>
             <p className="auth-subtitle">Accede a tu cuenta de Laboria-V2</p>
           </header>

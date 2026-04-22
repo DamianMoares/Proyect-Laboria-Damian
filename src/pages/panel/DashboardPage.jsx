@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import logoNegro from '../../assets/img/Laboria_fondo_Negro.png';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
@@ -68,7 +69,7 @@ const DashboardPage = () => {
     <div className="panel-page">
       <div className="container">
         <header className="panel-header">
-          <img src="../../assets/img/Laboria_fondo_Negro.png" alt="Laboria-V2" className="panel-logo" />
+          <img src={logoNegro} alt="Laboria-V2" className="panel-logo" />
           <h1>Panel de {isCandidate() ? profile.firstName || user.name : profile.companyName || user.name}</h1>
           <p className="panel-subtitle">
             Gestiona tu cuenta y actividades

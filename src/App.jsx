@@ -21,6 +21,7 @@ import MyCoursesPage from './pages/cursos/MyCoursesPage';
 import MyApplicationsPage from './pages/aplicaciones/MyApplicationsPage';
 import SavedCoursesPage from './pages/cursos/SavedCoursesPage';
 import CurriculumPage from './pages/curriculo/CurriculumPage';
+import logoBlanco from './assets/img/Laboria_fondo_Blanco.png';
 import './App.css';
 
 function Navbar() {
@@ -40,7 +41,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="container navbar-container">
         <Link to="/" className="navbar-logo">
-          <img src="/src/assets/img/Laboria_fondo_Blanco.png" alt="Laboria-V2" className="navbar-logo-img" />
+          <img src={logoBlanco} alt="Laboria-V2" className="navbar-logo-img" />
         </Link>
         <ul className="navbar-menu">
           <li className="navbar-item">

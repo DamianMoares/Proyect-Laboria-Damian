@@ -6,5 +6,11 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
-  }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true
+  },
+  // Uncomment and set your repository name for GitHub Pages deployment
+  // base: '/Proyecto-Laboria-Damián/',
 });
