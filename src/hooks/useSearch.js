@@ -1,6 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
 import useDebounce, { SEARCH_DEBOUNCE_DELAY } from './useDebounce';
 
+/**
+ * Hook para búsqueda con filtros dinámicos y debounce.
+ * @param {Array} items - Lista de items a buscar
+ * @param {Array<string>} searchFields - Campos donde buscar (ej: ['title', 'company'])
+ * @param {Object} filterConfig - Configuración de filtros { key: matcher }
+ * @returns {Object} Estado y funciones de búsqueda
+ */
 const useSearch = (items, searchFields = [], filterConfig = {}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState(
@@ -8,10 +15,18 @@ const useSearch = (items, searchFields = [], filterConfig = {}) => {
   );
   const debouncedSearch = useDebounce(searchTerm, SEARCH_DEBOUNCE_DELAY);
 
+  /**
+   * Actualiza un filtro específico.
+   * @param {string} key - Nombre del filtro
+   * @param {*} value - Valor del filtro
+   */
   const updateFilter = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  /**
+   * Limpia todos los filtros y el término de búsqueda.
+   */
   const clearFilters = useCallback(() => {
     setSearchTerm('');
     setFilters(Object.keys(filterConfig).reduce((acc, key) => ({ ...acc, [key]: '' }), {}));
@@ -37,6 +52,11 @@ const useSearch = (items, searchFields = [], filterConfig = {}) => {
     });
   }, [items, debouncedSearch, searchFields, filters, filterConfig]);
 
+  /**
+   * Obtiene valores únicos de un campo (para select options).
+   * @param {string} field - Campo del item
+   * @returns {Array} Valores únicos
+   */
   const uniqueValues = useCallback((field) => {
     return [...new Set(items.map(item => item[field]).filter(Boolean))];
   }, [items]);

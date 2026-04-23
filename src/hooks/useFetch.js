@@ -1,5 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+/**
+ * Hook para peticiones HTTP con AbortController y manejo de errores.
+ * @param {string} url - URL de la API
+ * @param {Object} options - Opciones de configuración
+ * @param {boolean} options.enabled - Auto-fetch al montar (default: true)
+ * @param {string} options.method - Método HTTP (default: 'GET')
+ * @param {Object} options.headers - Headers adicionales
+ * @param {*} options.body - Body para peticiones POST/PUT/PATCH
+ * @param {boolean} options.cache - Usar caché (default: true)
+ * @returns {Object} Estado y funciones de fetch
+ */
 const useFetch = (url, options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -8,6 +19,11 @@ const useFetch = (url, options = {}) => {
 
   const { enabled = true, method = 'GET', headers = {}, body = null, cache = true } = options;
 
+  /**
+   * Ejecuta una petición fetch con configuración personalizable.
+   * @param {Object} overrideOptions - Opciones que sobrescriben las defaults
+   * @returns {Promise<Object>} { success, data, error, aborted }
+   */
   const fetchData = useCallback(async (overrideOptions = {}) => {
     const finalUrl = overrideOptions.url || url;
     const finalMethod = overrideOptions.method || method;
@@ -54,18 +70,37 @@ const useFetch = (url, options = {}) => {
     }
   }, [url, method, headers, body]);
 
+  /**
+   * Ejecuta petición POST.
+   * @param {Object} postData - Datos a enviar
+   * @returns {Promise<Object>} Resultado de la petición
+   */
   const postData = useCallback(async (postData) => {
     return fetchData({ method: 'POST', body: postData });
   }, [fetchData]);
 
+  /**
+   * Ejecuta petición PUT.
+   * @param {Object} putData - Datos a enviar
+   * @returns {Promise<Object>} Resultado de la petición
+   */
   const putData = useCallback(async (putData) => {
     return fetchData({ method: 'PUT', body: putData });
   }, [fetchData]);
 
+  /**
+   * Ejecuta petición PATCH.
+   * @param {Object} patchData - Datos a enviar
+   * @returns {Promise<Object>} Resultado de la petición
+   */
   const patchData = useCallback(async (patchData) => {
     return fetchData({ method: 'PATCH', body: patchData });
   }, [fetchData]);
 
+  /**
+   * Ejecuta petición DELETE.
+   * @returns {Promise<Object>} Resultado de la petición
+   */
   const deleteData = useCallback(async () => {
     return fetchData({ method: 'DELETE' });
   }, [fetchData]);
@@ -81,6 +116,9 @@ const useFetch = (url, options = {}) => {
     };
   }, [enabled, url]);
 
+  /**
+   * Restablece el estado a valores iniciales.
+   */
   const reset = useCallback(() => {
     setData(null);
     setError(null);
