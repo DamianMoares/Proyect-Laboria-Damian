@@ -159,6 +159,7 @@
 }
 
 .btn-primary:hover {
+  color: var(--color-black);
   background-color: var(--color-gold-light);
   border-color: var(--color-gold-light);
 }
