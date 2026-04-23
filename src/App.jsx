@@ -21,7 +21,8 @@ import MyCoursesPage from './pages/cursos/MyCoursesPage';
 import MyApplicationsPage from './pages/aplicaciones/MyApplicationsPage';
 import SavedCoursesPage from './pages/cursos/SavedCoursesPage';
 import CurriculumPage from './pages/curriculo/CurriculumPage';
-import logoBlanco from './assets/img/Laboria_fondo_Blanco.png';
+import ApiStatusPage from './pages/admin/ApiStatusPage';
+import logoBlanco from './assets/img/Laboria_fondo_Negro.png';
 import './App.css';
 
 function Navbar() {
@@ -105,7 +106,7 @@ function Navbar() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <div className="app">
           <Navbar />
           <TabsNavigation />
@@ -130,6 +131,7 @@ function App() {
               <Route path="/mis-aplicaciones" element={<MyApplicationsPage />} />
               <Route path="/cursos-guardados" element={<SavedCoursesPage />} />
               <Route path="/curriculum" element={<CurriculumPage />} />
+              <Route path="/admin/api-status" element={<ApiStatusPage />} />
             </Routes>
           </main>
 

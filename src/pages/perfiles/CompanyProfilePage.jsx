@@ -144,6 +144,9 @@ const CompanyProfilePage = () => {
           <aside className="profile-sidebar">
             <div className="sidebar-card">
               <h3>Acciones rápidas</h3>
+              <Link to="/panel" className="sidebar-action">
+                Resumen
+              </Link>
               {(isCompanyEmployees() || isCompanyHybrid()) && (
                 <Link to="/empleos" className="sidebar-action">
                   Ver ofertas de empleo

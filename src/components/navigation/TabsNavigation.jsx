@@ -15,7 +15,6 @@ const TabsNavigation = () => {
 
   // Configuración de pestañas por rol
   const getCandidateTabs = () => [
-    { id: 'overview', label: 'Resumen', icon: '📊', link: '/panel' },
     { id: 'jobs', label: 'Empleos', icon: '💼', link: '/empleos' },
     { id: 'courses', label: 'Cursos', icon: '📚', link: '/cursos' },
     { id: 'applications', label: 'Aplicaciones', icon: '📝', link: '/mis-aplicaciones' },
@@ -25,7 +24,6 @@ const TabsNavigation = () => {
   ];
 
   const getEmployeeTabs = () => [
-    { id: 'overview', label: 'Resumen', icon: '📊', link: '/panel' },
     { id: 'post-job', label: 'Publicar Oferta', icon: '➕', link: '/publicar-oferta' },
     { id: 'my-jobs', label: 'Mis Ofertas', icon: '📋', link: '/mis-ofertas' },
     { id: 'browse-jobs', label: 'Ver Ofertas', icon: '🔍', link: '/empleos' },
@@ -33,7 +31,6 @@ const TabsNavigation = () => {
   ];
 
   const getStudentTabs = () => [
-    { id: 'overview', label: 'Resumen', icon: '📊', link: '/panel' },
     { id: 'post-course', label: 'Publicar Curso', icon: '➕', link: '/publicar-curso' },
     { id: 'my-courses', label: 'Mis Cursos', icon: '📚', link: '/mis-cursos' },
     { id: 'browse-courses', label: 'Ver Cursos', icon: '🔍', link: '/cursos' },
@@ -41,7 +38,6 @@ const TabsNavigation = () => {
   ];
 
   const getHybridTabs = () => [
-    { id: 'overview', label: 'Resumen', icon: '📊', link: '/panel' },
     { id: 'post-job', label: 'Publicar Oferta', icon: '➕', link: '/publicar-oferta' },
     { id: 'my-jobs', label: 'Mis Ofertas', icon: '📋', link: '/mis-ofertas' },
     { id: 'post-course', label: 'Publicar Curso', icon: '➕', link: '/publicar-curso' },

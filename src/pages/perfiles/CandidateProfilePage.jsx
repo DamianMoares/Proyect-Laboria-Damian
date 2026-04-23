@@ -208,6 +208,9 @@ const CandidateProfilePage = () => {
           <aside className="profile-sidebar">
             <div className="sidebar-card">
               <h3>Acciones rápidas</h3>
+              <Link to="/panel" className="sidebar-action">
+                Resumen
+              </Link>
               <Link to="/empleos" className="sidebar-action">
                 Buscar Empleo
               </Link>

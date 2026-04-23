@@ -8,7 +8,39 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 3000,
-      open: true
+      open: true,
+      proxy: {
+        '/api/jcyl': {
+          target: 'https://data.opendatasoft.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/jcyl/, ''),
+        },
+        '/api/serpapi': {
+          target: 'https://serpapi.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/serpapi/, ''),
+        },
+        '/api/jobicy': {
+          target: 'https://jobicy.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/jobicy/, ''),
+        },
+        '/api/himalayas': {
+          target: 'https://himalayas.app',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/himalayas/, ''),
+        },
+        '/api/remotive': {
+          target: 'https://remotive.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/remotive/, ''),
+        },
+        '/api/arbeitnow': {
+          target: 'https://www.arbeitnow.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/arbeitnow/, ''),
+        },
+      },
     },
     build: {
       outDir: 'dist',

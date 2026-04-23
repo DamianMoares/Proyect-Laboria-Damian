@@ -91,16 +91,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      <footer className="home-footer">
-        <div className="container">
-          <p>&copy; 2024 Laboria . Todos los derechos reservados.</p>
-          <div className="footer-links">
-            <Link to="/acerca-de">Acerca de</Link>
-            <Link to="/faq">FAQ</Link>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 };

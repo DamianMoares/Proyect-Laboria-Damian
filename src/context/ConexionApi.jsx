@@ -1,51 +1,110 @@
-// ConexionApi.jsx - Sistema de conexión a APIs externas para búsqueda de empleo y cursos
-// Este archivo maneja las llamadas a APIs externas para obtener ofertas de empleo y cursos
+// ConexionApi.jsx - Sistema modular de conexión a APIs y RSS feeds
+// Este archivo maneja las llamadas a APIs externas y RSS feeds para obtener ofertas de empleo y cursos
+// Sistema modular: agregar nuevas fuentes simplemente añadiendo objetos a los arrays
 
-// URLs de las APIs (se pueden configurar mediante variables de entorno)
-// Soporta múltiples APIs por categoría para combinar resultados
+// URLs de las APIs y RSS feeds (se pueden configurar mediante variables de entorno)
+// Soporta múltiples APIs y RSS feeds por categoría para combinar resultados
 const API_CONFIG = {
-  // APIs de empleo (ejemplo: Adzuna, InfoJobs, LinkedIn, etc.)
+  // APIs de empleo (REST APIs)
   JOBS_APIS: [
     {
-      name: 'Adzuna',
-      url: import.meta.env.VITE_JOBS_API_1_URL || 'https://api.adzuna.com/v1/api/jobs/es/search/1',
-      appId: import.meta.env.VITE_JOBS_API_1_APP_ID || '',
+      name: 'Junta Castilla y León Empleo',
+      url: import.meta.env.VITE_JOBS_API_1_URL || 'https://data.opendatasoft.com/api/records/1.0/search/?dataset=ofertas-de-empleo@jcyl',
       apiKey: import.meta.env.VITE_JOBS_API_1_KEY || '',
       enabled: true,
+      type: 'api', // Tipo: api o rss
     },
     {
-      name: 'InfoJobs',
-      url: import.meta.env.VITE_JOBS_API_2_URL || 'https://api.infojobs.net/api/1/offer',
+      name: 'SerpApi Google Jobs',
+      url: import.meta.env.VITE_JOBS_API_2_URL || 'https://serpapi.com/search',
       apiKey: import.meta.env.VITE_JOBS_API_2_KEY || '',
-      enabled: false,
+      enabled: true,
+      type: 'api',
     },
     {
-      name: 'LinkedIn',
-      url: import.meta.env.VITE_JOBS_API_3_URL || 'https://api.linkedin.com/v2/jobs',
+      name: 'Jobicy Remote Jobs',
+      url: import.meta.env.VITE_JOBS_API_3_URL || 'https://jobicy.com/api/v2/remote-jobs',
       apiKey: import.meta.env.VITE_JOBS_API_3_KEY || '',
-      enabled: false,
+      enabled: true,
+      type: 'api',
+    },
+    {
+      name: 'Himalayas Remote Jobs',
+      url: import.meta.env.VITE_JOBS_API_4_URL || 'https://himalayas.app/jobs/api',
+      apiKey: import.meta.env.VITE_JOBS_API_4_KEY || '',
+      enabled: true,
+      type: 'api',
+    },
+    {
+      name: 'Remotive Remote Jobs',
+      url: import.meta.env.VITE_JOBS_API_5_URL || 'https://remotive.com/api/remote-jobs',
+      apiKey: import.meta.env.VITE_JOBS_API_5_KEY || '',
+      enabled: true,
+      type: 'api',
+    },
+    {
+      name: 'Arbeitnow Job Board',
+      url: import.meta.env.VITE_JOBS_API_6_URL || 'https://www.arbeitnow.com/api/job-board-api',
+      apiKey: import.meta.env.VITE_JOBS_API_6_KEY || '',
+      enabled: true,
+      type: 'api',
     },
   ],
-  
-  // APIs de cursos (ejemplo: Khan Academy, Coursera, Udemy, etc.)
+
+  // RSS feeds de empleo
+  JOBS_RSS: [
+    {
+      name: 'Indeed RSS',
+      url: 'https://rss.indeed.com/rss?q=software+engineer&l=spain',
+      enabled: false, // Requiere proxy para CORS
+      type: 'rss',
+    },
+    {
+      name: 'Glassdoor Blog',
+      url: 'https://www.glassdoor.com/blog/feed/',
+      enabled: true,
+      type: 'rss',
+    },
+  ],
+
+  // APIs de cursos
   COURSES_APIS: [
     {
       name: 'Khan Academy',
       url: import.meta.env.VITE_COURSES_API_1_URL || 'https://www.khanacademy.org/api/v1/topic/root',
       apiKey: import.meta.env.VITE_COURSES_API_1_KEY || '',
       enabled: true,
+      type: 'api',
     },
     {
-      name: 'Coursera',
+      name: 'Coursera API',
       url: import.meta.env.VITE_COURSES_API_2_URL || 'https://api.coursera.org/api/courses.v1',
       apiKey: import.meta.env.VITE_COURSES_API_2_KEY || '',
-      enabled: false,
+      enabled: false, // Requiere API key
+      type: 'api',
     },
     {
-      name: 'Udemy',
+      name: 'Udemy API',
       url: import.meta.env.VITE_COURSES_API_3_URL || 'https://www.udemy.com/api-2.0/courses',
       apiKey: import.meta.env.VITE_COURSES_API_3_KEY || '',
-      enabled: false,
+      enabled: false, // Requiere API key
+      type: 'api',
+    },
+  ],
+
+  // RSS feeds de cursos
+  COURSES_RSS: [
+    {
+      name: 'Coursera Blog',
+      url: 'https://blog.coursera.org/feed/',
+      enabled: true,
+      type: 'rss',
+    },
+    {
+      name: 'edX Blog',
+      url: 'https://blog.edx.org/feed',
+      enabled: true,
+      type: 'rss',
     },
   ],
 };
@@ -76,6 +135,43 @@ const handleApiError = (error, context) => {
 };
 
 /**
+ * Parsea un RSS feed y lo convierte a formato JSON
+ * @param {string} rssText - Contenido del RSS feed
+ * @returns {Array} Array de items del feed
+ */
+const parseRSSFeed = (rssText) => {
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(rssText, 'text/xml');
+    
+    const items = xmlDoc.querySelectorAll('item');
+    const parsedItems = [];
+    
+    items.forEach(item => {
+      const title = item.querySelector('title')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '';
+      const description = item.querySelector('description')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      const category = item.querySelector('category')?.textContent || '';
+      
+      parsedItems.push({
+        title,
+        link,
+        description,
+        pubDate,
+        category,
+        source: 'RSS Feed',
+      });
+    });
+    
+    return parsedItems;
+  } catch (error) {
+    console.error('Error parsing RSS feed:', error);
+    return [];
+  }
+};
+
+/**
  * Realiza una petición GET a una API externa
  * @param {string} url - URL de la API
  * @param {Object} headers - Headers de la petición
@@ -84,6 +180,7 @@ const handleApiError = (error, context) => {
  */
 const fetchFromApi = async (url, headers, context) => {
   try {
+    console.log(`Fetching from API: ${url}`);
     const response = await fetch(url, {
       method: 'GET',
       headers,
@@ -94,9 +191,38 @@ const fetchFromApi = async (url, headers, context) => {
     }
 
     const data = await response.json();
+    console.log(`API response:`, data);
     return data;
   } catch (error) {
-    handleApiError(error, context);
+    console.error(`Error in ${context}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Realiza una petición GET a un RSS feed
+ * @param {string} url - URL del RSS feed
+ * @param {string} context - Contexto para manejo de errores
+ * @returns {Promise<Array>} Array de items del feed
+ */
+const fetchFromRSS = async (url, context) => {
+  try {
+    console.log(`Fetching from RSS: ${url}`);
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const rssText = await response.text();
+    const items = parseRSSFeed(rssText);
+    console.log(`RSS response: ${items.length} items`);
+    return items;
+  } catch (error) {
+    console.error(`Error in ${context}:`, error);
+    throw error;
   }
 };
 
@@ -122,6 +248,7 @@ export const searchJobs = async (filters = {}) => {
   } = filters;
 
   const enabledApis = API_CONFIG.JOBS_APIS.filter(api => api.enabled && api.url);
+  const enabledRss = API_CONFIG.JOBS_RSS.filter(rss => rss.enabled && rss.url);
   const allResults = [];
   const apiErrors = [];
 
@@ -131,25 +258,77 @@ export const searchJobs = async (filters = {}) => {
       // Construir URL base con autenticación si es necesaria
       let url = buildAuthUrl(api.url, api.appId, api.apiKey);
       
+      console.log(`Processing API: ${api.name}, URL: ${url}`);
+      
       // Construir URL con parámetros de consulta
       const params = new URLSearchParams();
-      if (query) params.append('q', query);
-      if (location) params.append('location', location);
-      if (category) params.append('category', category);
-      if (workMode) params.append('work_mode', workMode);
-      params.append('page', page);
-      params.append('limit', limit);
-
-      // Agregar parámetros a la URL
-      const separator = url.includes('?') ? '&' : '?';
-      url = `${url}${separator}${params.toString()}`;
+      
+      // APIs públicas gratuitas con parámetros específicos
+      if (api.name === 'Junta Castilla y León Empleo') {
+        // API de Castilla y León - OpenDataSoft format
+        // La URL base ya tiene el dataset, solo agregar rows y start
+        params.append('rows', limit);
+        params.append('start', (page - 1) * limit);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+        console.log(`Final URL for JCyL: ${url}`);
+      } else if (api.name === 'SerpApi Google Jobs') {
+        // SerpApi Google Jobs - requiere API key
+        params.append('engine', 'google_jobs');
+        if (query) params.append('q', query);
+        else params.append('q', 'empleo España'); // Por defecto buscar empleo en España
+        if (location) params.append('location', location);
+        else params.append('location', 'Spain'); // Por defecto España
+        params.append('api_key', api.apiKey);
+        params.append('num', limit);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+        console.log(`Final URL for SerpApi: ${url}`);
+      } else if (api.name === 'Jobicy Remote Jobs') {
+        // Jobicy usa parámetros específicos - filtrar por España
+        params.append('count', limit);
+        if (location) params.append('geo', location);
+        else params.append('geo', 'spain'); // Por defecto España
+        if (query) params.append('tag', query);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else if (api.name === 'Himalayas Remote Jobs') {
+        // Himalayas usa parámetros específicos - filtrar por España
+        if (query) params.append('q', query);
+        if (location) params.append('country', location);
+        else params.append('country', 'Spain'); // Por defecto España
+        params.append('limit', limit);
+        params.append('offset', (page - 1) * limit);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else if (api.name === 'Remotive Remote Jobs') {
+        // Remotive usa parámetros específicos
+        if (query) params.append('search', query);
+        if (category) params.append('category', category);
+        params.append('limit', limit);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else if (api.name === 'Arbeitnow Job Board') {
+        // Arbeitnow es una API simple sin parámetros de filtro
+        // Devuelve todos los jobs, luego filtramos localmente
+        // No agregar parámetros
+      }
 
       const headers = getHeaders(api.apiKey);
 
       const data = await fetchFromApi(url, headers, `buscar ofertas en ${api.name}`);
       
+      console.log(`Data received from ${api.name}:`, data);
+      
       // Normalizar datos y agregar fuente
       const normalizedData = normalizeJobsData(data);
+      console.log(`Normalized data from ${api.name}:`, normalizedData);
+      
       return {
         source: api.name,
         data: normalizedData,
@@ -161,20 +340,70 @@ export const searchJobs = async (filters = {}) => {
     }
   });
 
-  // Esperar todas las peticiones
-  const results = await Promise.all(apiPromises);
+  // Esperar todas las peticiones de APIs
+  const apiResults = await Promise.all(apiPromises);
 
-  // Combinar resultados y agregar información de fuente
-  results.forEach(result => {
+  // Combinar resultados de APIs y agregar información de fuente
+  apiResults.forEach(result => {
     result.data.forEach(job => {
       job.source = result.source;
       allResults.push(job);
     });
   });
 
+  // Realizar peticiones a RSS feeds habilitados
+  const rssPromises = enabledRss.map(async (rss) => {
+    try {
+      console.log(`Processing RSS: ${rss.name}, URL: ${rss.url}`);
+      const items = await fetchFromRSS(rss.url, `buscar feed ${rss.name}`);
+      
+      // Normalizar items de RSS a formato de empleo
+      const normalizedItems = items.map(item => ({
+        id: item.link || Math.random().toString(36).substr(2, 9),
+        title: item.title || 'Sin título',
+        company: rss.name,
+        location: 'No especificado',
+        workMode: 'No especificado',
+        schedule: 'No especificado',
+        experienceLevel: 'No especificado',
+        salary: 'No especificado',
+        contractType: 'No especificado',
+        sector: item.category || 'No especificado',
+        technology: 'No especificado',
+        description: stripHtml(item.description) || 'Sin descripción disponible',
+        requirements: [],
+        benefits: [],
+        postedDate: item.pubDate ? new Date(item.pubDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        url: item.link || '#',
+        remote: false,
+        logo: '',
+        source: rss.name,
+      }));
+      
+      return {
+        source: rss.name,
+        data: normalizedItems,
+      };
+    } catch (error) {
+      console.error(`Error en RSS ${rss.name}:`, error);
+      apiErrors.push({ api: rss.name, error: error.message });
+      return { source: rss.name, data: [] };
+    }
+  });
+
+  // Esperar todas las peticiones de RSS
+  const rssResults = await Promise.all(rssPromises);
+
+  // Combinar resultados de RSS
+  rssResults.forEach(result => {
+    result.data.forEach(job => {
+      allResults.push(job);
+    });
+  });
+
   // Log de errores si existen
   if (apiErrors.length > 0) {
-    console.warn('Errores en algunas APIs de empleo:', apiErrors);
+    console.warn('Errores en algunas fuentes de empleo:', apiErrors);
   }
 
   // Aplicar límite total a resultados combinados
@@ -227,99 +456,6 @@ export const getJobDetails = async (jobId, source = null) => {
   }
 
   return null;
-};
-
-/**
- * Busca cursos en múltiples APIs externas
- * @param {Object} filters - Filtros de búsqueda
- * @param {string} filters.query - Término de búsqueda
- * @param {string} filters.category - Categoría
- * @param {string} filters.level - Nivel (principiante, intermedio, avanzado)
- * @param {string} filters.language - Idioma
- * @param {string} filters.location - Ubicación (ej: 'españa' para presenciales)
- * @param {string} filters.mode - Modalidad (presencial, online, ambos)
- * @param {number} filters.page - Página de resultados
- * @param {number} filters.limit - Límite de resultados por página
- * @returns {Promise<Array>} Lista combinada de cursos de todas las APIs
- */
-export const searchCourses = async (filters = {}) => {
-  const {
-    query = '',
-    category = '',
-    level = '',
-    language = 'es',
-    location = '',
-    mode = 'ambos', // 'presencial', 'online', 'ambos'
-    page = 1,
-    limit = 20,
-  } = filters;
-
-  const enabledApis = API_CONFIG.COURSES_APIS.filter(api => api.enabled && api.url);
-  const allResults = [];
-  const apiErrors = [];
-
-  // Realizar peticiones a todas las APIs habilitadas en paralelo
-  const apiPromises = enabledApis.map(async (api) => {
-    try {
-      // Construir URL base con autenticación si es necesaria
-      let url = buildAuthUrl(api.url, api.appId, api.apiKey);
-      
-      // Construir URL con parámetros de consulta
-      const params = new URLSearchParams();
-      if (query) params.append('q', query);
-      if (category) params.append('category', category);
-      if (level) params.append('level', level);
-      params.append('language', language);
-      if (location) params.append('location', location);
-      if (mode && mode !== 'ambos') params.append('mode', mode);
-      params.append('page', page);
-      params.append('limit', limit);
-
-      // Agregar parámetros a la URL
-      const separator = url.includes('?') ? '&' : '?';
-      url = `${url}${separator}${params.toString()}`;
-
-      const headers = getHeaders(api.apiKey);
-
-      const data = await fetchFromApi(url, headers, `buscar cursos en ${api.name}`);
-      
-      // Normalizar datos y agregar fuente
-      let normalizedData = normalizeCoursesData(data);
-      
-      // Aplicar filtros adicionales si la API no los soporta nativamente
-      if (location || (mode && mode !== 'ambos')) {
-        normalizedData = filterCoursesByLocationAndMode(normalizedData, location, mode);
-      }
-      
-      return {
-        source: api.name,
-        data: normalizedData,
-      };
-    } catch (error) {
-      console.error(`Error en API ${api.name}:`, error);
-      apiErrors.push({ api: api.name, error: error.message });
-      return { source: api.name, data: [] };
-    }
-  });
-
-  // Esperar todas las peticiones
-  const results = await Promise.all(apiPromises);
-
-  // Combinar resultados y agregar información de fuente
-  results.forEach(result => {
-    result.data.forEach(course => {
-      course.source = result.source;
-      allResults.push(course);
-    });
-  });
-
-  // Log de errores si existen
-  if (apiErrors.length > 0) {
-    console.warn('Errores en algunas APIs de cursos:', apiErrors);
-  }
-
-  // Aplicar límite total a resultados combinados
-  return allResults.slice(0, limit);
 };
 
 /**
@@ -382,7 +518,7 @@ const normalizeJobsData = (apiData) => {
   }
 
   // Si la API devuelve un objeto con propiedades como 'jobs', 'results', 'data', etc.
-  const jobsArray = apiData.jobs || apiData.results || apiData.data || apiData.items || [];
+  const jobsArray = apiData.jobs || apiData.results || apiData.data || apiData.items || apiData.records || apiData.jobs_results || [];
   
   return jobsArray.map(job => normalizeJobDetails(job));
 };
@@ -393,27 +529,214 @@ const normalizeJobsData = (apiData) => {
  * @returns {Object} Datos normalizados
  */
 const normalizeJobDetails = (job) => {
+  // Traducir modalidad de trabajo al español
+  const workModeMap = {
+    'remote': 'Remoto',
+    'hybrid': 'Híbrido',
+    'on-site': 'Presencial',
+    'onsite': 'Presencial',
+    'full-time': 'Tiempo completo',
+    'part-time': 'Tiempo parcial',
+    'contractor': 'Autónomo',
+    'freelance': 'Freelance',
+  };
+  
+  // Traducir nivel de experiencia al español
+  const experienceMap = {
+    'entry': 'Junior',
+    'junior': 'Junior',
+    'mid': 'Intermedio',
+    'mid-level': 'Intermedio',
+    'intermediate': 'Intermedio',
+    'senior': 'Senior',
+    'lead': 'Liderazgo',
+    'manager': 'Manager',
+    'director': 'Director',
+    'executive': 'Ejecutivo',
+  };
+  
+  // Traducir tipo de contrato al español
+  const contractMap = {
+    'full-time': 'Indefinido',
+    'part-time': 'Parcial',
+    'contract': 'Temporal',
+    'temporary': 'Temporal',
+    'internship': 'Prácticas',
+    'freelance': 'Freelance',
+    'volunteer': 'Voluntario',
+    'indefinido': 'Indefinido',
+    'temporal': 'Temporal',
+  };
+  
+  // Traducir jornada al español
+  const scheduleMap = {
+    'full-time': 'Completa',
+    'part-time': 'Parcial',
+    'flexible': 'Flexible',
+    'completa': 'Completa',
+    'parcial': 'Parcial',
+  };
+  
+  const rawWorkMode = job.work_mode || job.workMode || job.employment_type || job.type || '';
+  const rawExperience = job.experience_level || job.level || job.seniority || '';
+  const rawContract = job.contract_type || job.employment_type || job.type || '';
+  const rawSchedule = job.schedule || job.hours || '';
+  
+  // Manejo especial para API de Castilla y León (OpenDataSoft format)
+  if (job.fields) {
+    const fields = job.fields;
+    return {
+      id: fields.identificador || job.recordid,
+      title: fields.titulo || 'Sin título',
+      company: 'Servicio Público de Empleo Castilla y León',
+      location: fields.localidad ? `${fields.localidad}, ${fields.provincia}` : fields.provincia || 'Castilla y León',
+      workMode: 'Presencial', // La mayoría son presenciales
+      schedule: 'Completa', // Por defecto
+      experienceLevel: 'No especificado',
+      salary: 'No especificado',
+      contractType: contractMap[fields.tipo_contrato?.toLowerCase()] || fields.tipo_contrato || 'No especificado',
+      sector: 'Empleo Público',
+      technology: 'No especificado',
+      description: stripHtml(fields.descripcion) || 'Sin descripción disponible',
+      requirements: [],
+      benefits: [],
+      postedDate: fields.fecha_publicacion || new Date().toISOString().split('T')[0],
+      url: fields.enlace_al_contenido || '#',
+      remote: false,
+      logo: '',
+    };
+  }
+  
+  // Manejo especial para SerpApi Google Jobs
+  if (job.job_id && job.detected_extensions) {
+    return {
+      id: job.job_id,
+      title: job.title || 'Sin título',
+      company: job.company_name || 'Empresa no especificada',
+      location: job.location || 'No especificado',
+      workMode: job.detected_extensions.schedule_type === 'REMOTE' ? 'Remoto' : 
+                job.detected_extensions.schedule_type === 'HYBRID' ? 'Híbrido' : 'Presencial',
+      schedule: job.detected_extensions.schedule_type || 'Completa',
+      experienceLevel: job.detected_extensions.experience_level || 'No especificado',
+      salary: job.detected_extensions.salary || 'No especificado',
+      contractType: job.detected_extensions.contract_type || 'No especificado',
+      sector: job.detected_extensions.industry || 'No especificado',
+      technology: job.detected_extensions.qualifications?.join(', ') || 'No especificado',
+      description: stripHtml(job.description) || 'Sin descripción disponible',
+      requirements: job.detected_extensions.qualifications || [],
+      benefits: job.detected_extensions.benefits || [],
+      postedDate: job.detected_extensions.posted_at || new Date().toISOString().split('T')[0],
+      url: job.apply_options?.[0]?.link || job.share_link || '#',
+      remote: job.detected_extensions.schedule_type === 'REMOTE',
+      logo: job.company_logo || '',
+    };
+  }
+  
+  // Manejo especial para InfoJobs API (cuando se habilite)
+  if (job.codigo && job.puesto) {
+    return {
+      id: job.codigo,
+      title: job.puesto || 'Sin título',
+      company: job.empresa || 'Empresa no especificada',
+      location: job.provincia || 'No especificado',
+      workMode: workModeMap[job.modalidad?.toLowerCase()] || job.modalidad || 'No especificado',
+      schedule: job.jornada || 'Completa',
+      experienceLevel: job.experiencia || 'No especificado',
+      salary: job.salario || 'No especificado',
+      contractType: contractMap[job.tipo_contrato?.toLowerCase()] || job.tipo_contrato || 'No especificado',
+      sector: job.categoria || 'No especificado',
+      technology: job.requisitos || 'No especificado',
+      description: stripHtml(job.descripcion) || 'Sin descripción disponible',
+      requirements: job.requisitos_minimos || [],
+      benefits: job.prestaciones || [],
+      postedDate: job.fecha_publicacion || new Date().toISOString().split('T')[0],
+      url: job.url || '#',
+      remote: job.teletrabajo || false,
+      logo: job.logo_empresa || '',
+    };
+  }
+  
+  // Manejo especial para SerpApi Google Jobs
+  if (job.job_id && job.detected_extensions) {
+    return {
+      id: job.job_id,
+      title: job.title || 'Sin título',
+      company: job.company_name || 'Empresa no especificada',
+      location: job.location || 'No especificado',
+      workMode: job.detected_extensions.schedule_type === 'REMOTE' ? 'Remoto' : 
+                job.detected_extensions.schedule_type === 'HYBRID' ? 'Híbrido' : 'Presencial',
+      schedule: job.detected_extensions.schedule_type || 'Completa',
+      experienceLevel: job.detected_extensions.experience_level || 'No especificado',
+      salary: job.detected_extensions.salary || 'No especificado',
+      contractType: job.detected_extensions.contract_type || 'No especificado',
+      sector: job.detected_extensions.industry || 'No especificado',
+      technology: job.detected_extensions.qualifications?.join(', ') || 'No especificado',
+      description: stripHtml(job.description) || 'Sin descripción disponible',
+      requirements: job.detected_extensions.qualifications || [],
+      benefits: job.detected_extensions.benefits || [],
+      postedDate: job.detected_extensions.posted_at || new Date().toISOString().split('T')[0],
+      url: job.apply_options?.[0]?.link || job.share_link || '#',
+      remote: job.detected_extensions.schedule_type === 'REMOTE',
+      logo: job.company_logo || '',
+    };
+  }
+  
+  // Manejo especial para InfoJobs API (cuando se habilite)
+  if (job.codigo && job.puesto) {
+    return {
+      id: job.codigo,
+      title: job.puesto || 'Sin título',
+      company: job.empresa || 'Empresa no especificada',
+      location: job.provincia || 'No especificado',
+      workMode: workModeMap[job.modalidad?.toLowerCase()] || job.modalidad || 'No especificado',
+      schedule: job.jornada || 'Completa',
+      experienceLevel: job.experiencia || 'No especificado',
+      salary: job.salario || 'No especificado',
+      contractType: contractMap[job.tipo_contrato?.toLowerCase()] || job.tipo_contrato || 'No especificado',
+      sector: job.categoria || 'No especificado',
+      technology: job.requisitos || 'No especificado',
+      description: stripHtml(job.descripcion) || 'Sin descripción disponible',
+      requirements: job.requisitos_minimos || [],
+      benefits: job.prestaciones || [],
+      postedDate: job.fecha_publicacion || new Date().toISOString().split('T')[0],
+      url: job.url || '#',
+      remote: job.teletrabajo || false,
+      logo: job.logo_empresa || '',
+    };
+  }
+  
   return {
-    id: job.id || job.job_id || job._id,
-    title: job.title || job.job_title || job.position || 'Sin título',
-    company: job.company || job.company_name || job.employer || 'Empresa no especificada',
-    location: job.location || job.city || job.country || 'Ubicación no especificada',
-    workMode: job.work_mode || job.workMode || job.employment_type || 'No especificado',
-    schedule: job.schedule || job.hours || 'No especificado',
-    experienceLevel: job.experience_level || job.level || 'No especificado',
-    salary: job.salary || job.salary_range || 'No especificado',
-    contractType: job.contract_type || job.contract_type || 'No especificado',
-    sector: job.sector || job.industry || job.category || 'No especificado',
-    technology: job.technology || job.tech_stack || job.skills?.join(', ') || 'No especificado',
-    description: job.description || job.job_description || job.summary || 'Sin descripción',
+    id: job.id || job.job_id || job._id || Math.random().toString(36).substr(2, 9),
+    title: job.title || job.job_title || job.position || job.role || 'Sin título',
+    company: job.company || job.company_name || job.employer || job.organization || 'Empresa no especificada',
+    location: job.location || job.city || job.country || job.candidate_required_location || 'Remoto',
+    workMode: workModeMap[rawWorkMode.toLowerCase()] || rawWorkMode || 'No especificado',
+    schedule: scheduleMap[rawSchedule.toLowerCase()] || rawSchedule || 'Completa',
+    experienceLevel: experienceMap[rawExperience.toLowerCase()] || rawExperience || 'No especificado',
+    salary: job.salary || job.salary_range || job.compensation || 'No especificado',
+    contractType: contractMap[rawContract.toLowerCase()] || rawContract || 'No especificado',
+    sector: job.sector || job.industry || job.category || job.department || 'No especificado',
+    technology: job.technology || job.tech_stack || job.tags?.join(', ') || job.skills?.join(', ') || 'No especificado',
+    description: stripHtml(job.description || job.job_description || job.summary || job.text) || 'Sin descripción disponible',
     requirements: job.requirements || job.qualifications || job.skills || [],
     benefits: job.benefits || job.perks || [],
-    postedDate: job.posted_date || job.created_at || job.date || new Date().toISOString(),
-    url: job.url || job.apply_url || job.application_url || '#',
+    postedDate: job.posted_date || job.created_at || job.date || job.publication_date || new Date().toISOString().split('T')[0],
+    url: job.url || job.apply_url || job.application_url || job.link || '#',
     // Campos adicionales que la API podría proporcionar
-    remote: job.remote || job.is_remote || false,
-    logo: job.logo || job.company_logo || '',
+    remote: job.remote || job.is_remote || rawWorkMode.toLowerCase().includes('remote') || false,
+    logo: job.logo || job.company_logo || job.company_logo_url || '',
   };
+};
+
+/**
+ * Función auxiliar para limpiar etiquetas HTML
+ * @param {string} html - Texto con etiquetas HTML
+ * @returns {string} Texto limpio sin etiquetas
+ */
+const stripHtml = (html) => {
+  if (!html) return '';
+  if (typeof html !== 'string') return String(html);
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
 };
 
 /**
@@ -504,6 +827,128 @@ const filterCoursesByLocationAndMode = (courses, location, mode) => {
 };
 
 /**
+ * Busca cursos en múltiples APIs externas y RSS feeds
+ * @param {Object} filters - Filtros de búsqueda
+ * @param {string} filters.query - Término de búsqueda
+ * @param {string} filters.category - Categoría
+ * @param {string} filters.level - Nivel (principiante, intermedio, avanzado)
+ * @param {string} filters.mode - Modalidad (online, presencial, ambos)
+ * @param {number} filters.page - Página de resultados
+ * @param {number} filters.limit - Límite de resultados por página
+ * @returns {Promise<Array>} Lista combinada de cursos de todas las fuentes
+ */
+export const searchCourses = async (filters = {}) => {
+  const {
+    query = '',
+    category = '',
+    level = '',
+    mode = '',
+    page = 1,
+    limit = 20,
+  } = filters;
+
+  const enabledApis = API_CONFIG.COURSES_APIS.filter(api => api.enabled && api.url);
+  const enabledRss = API_CONFIG.COURSES_RSS.filter(rss => rss.enabled && rss.url);
+  const allResults = [];
+  const apiErrors = [];
+
+  // Realizar peticiones a todas las APIs habilitadas en paralelo
+  const apiPromises = enabledApis.map(async (api) => {
+    try {
+      let url = buildAuthUrl(api.url, api.appId, api.apiKey);
+      
+      console.log(`Processing Course API: ${api.name}, URL: ${url}`);
+      
+      const headers = getHeaders(api.apiKey);
+      const data = await fetchFromApi(url, headers, `buscar cursos en ${api.name}`);
+      
+      const normalizedData = normalizeCoursesData(data);
+      
+      return {
+        source: api.name,
+        data: normalizedData,
+      };
+    } catch (error) {
+      console.error(`Error en API de cursos ${api.name}:`, error);
+      apiErrors.push({ api: api.name, error: error.message });
+      return { source: api.name, data: [] };
+    }
+  });
+
+  // Esperar todas las peticiones de APIs
+  const apiResults = await Promise.all(apiPromises);
+
+  // Combinar resultados de APIs
+  apiResults.forEach(result => {
+    result.data.forEach(course => {
+      course.source = result.source;
+      allResults.push(course);
+    });
+  });
+
+  // Realizar peticiones a RSS feeds habilitados
+  const rssPromises = enabledRss.map(async (rss) => {
+    try {
+      console.log(`Processing Course RSS: ${rss.name}, URL: ${rss.url}`);
+      const items = await fetchFromRSS(rss.url, `buscar feed ${rss.name}`);
+      
+      // Normalizar items de RSS a formato de cursos
+      const normalizedItems = items.map(item => ({
+        id: item.link || Math.random().toString(36).substr(2, 9),
+        title: item.title || 'Sin título',
+        provider: rss.name,
+        category: item.category || 'Sin categoría',
+        level: 'No especificado',
+        duration: 'No especificado',
+        language: 'es',
+        price: 'No especificado',
+        rating: 0,
+        reviews: 0,
+        students: 0,
+        description: stripHtml(item.description) || 'Sin descripción',
+        requirements: [],
+        learningOutcomes: [],
+        syllabus: [],
+        imageUrl: '',
+        url: item.link || '#',
+        certificate: false,
+        lastUpdated: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
+        location: '',
+        mode: 'online',
+        source: rss.name,
+      }));
+      
+      return {
+        source: rss.name,
+        data: normalizedItems,
+      };
+    } catch (error) {
+      console.error(`Error en RSS de cursos ${rss.name}:`, error);
+      apiErrors.push({ api: rss.name, error: error.message });
+      return { source: rss.name, data: [] };
+    }
+  });
+
+  // Esperar todas las peticiones de RSS
+  const rssResults = await Promise.all(rssPromises);
+
+  // Combinar resultados de RSS
+  rssResults.forEach(result => {
+    result.data.forEach(course => {
+      allResults.push(course);
+    });
+  });
+
+  // Log de errores si existen
+  if (apiErrors.length > 0) {
+    console.warn('Errores en algunas fuentes de cursos:', apiErrors);
+  }
+
+  // Aplicar límite total a resultados combinados
+  return allResults.slice(0, limit);
+};
+
+/**
  * Verifica la conexión con las APIs externas
  * @returns {Promise<Object>} Estado de conexión de cada API individual
  */
@@ -525,7 +970,11 @@ export const checkApiConnection = async () => {
     }
 
     try {
-      const response = await fetch(`${api.url}?limit=1`, {
+      // Todas las APIs de empleo son públicas gratuitas sin parámetros
+      // Usar URL directa
+      let url = api.url;
+      
+      const response = await fetch(url, {
         method: 'GET',
         headers: getHeaders(api.apiKey),
       });
@@ -555,7 +1004,10 @@ export const checkApiConnection = async () => {
     }
 
     try {
-      const response = await fetch(`${api.url}?limit=1`, {
+      // Junta de Andalucía SAE usa URL directa sin parámetros
+      const url = api.url;
+      
+      const response = await fetch(url, {
         method: 'GET',
         headers: getHeaders(api.apiKey),
       });

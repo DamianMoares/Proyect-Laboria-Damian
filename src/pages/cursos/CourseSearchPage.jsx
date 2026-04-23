@@ -1,69 +1,138 @@
 import React, { useState, useEffect } from 'react';
 import coursesData from '../../data/courses.json';
+import { spainMunicipalities } from '../../data/searchData';
+import { searchCourses } from '../../context/ConexionApi';
 import CourseCard from '../../components/courses/CourseCard';
 import './CourseSearchPage.css';
 
 const CourseSearchPage = () => {
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
   const [selectedCertification, setSelectedCertification] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState('');
+  const [selectedDuration, setSelectedDuration] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [usingFallback, setUsingFallback] = useState(false);
 
-  useEffect(() => {
-    setCourses(coursesData);
-  }, []);
+  const RESULTS_PER_PAGE = 50;
 
-  const levels = [...new Set(coursesData.map(course => course.level))];
-  const formats = [...new Set(coursesData.map(course => course.format))];
+  const locations = spainMunicipalities;
+  const levels = ['Principiante', 'Intermedio', 'Avanzado', 'Experto'];
+  const formats = ['Online', 'Presencial', 'Híbrido'];
+  const categories = ['Tecnología', 'Negocios', 'Diseño', 'Marketing', 'Salud', 'Educación', 'Idiomas', 'Finanzas', 'Arte', 'Ciencia', 'Ingeniería', 'Otros'];
+  const languages = ['Español', 'Inglés', 'Francés', 'Alemán', 'Italiano', 'Portugués', 'Catalán', 'Euskera', 'Gallego', 'Chino', 'Japonés', 'Otros'];
+  const priceRanges = ['Gratis', '0 - 50 €', '50 - 100 €', '100 - 200 €', '200 - 500 €', '500+ €'];
+  const durations = ['< 10 horas', '10 - 30 horas', '30 - 60 horas', '60 - 100 horas', '100+ horas'];
 
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = 
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.technology.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesLevel = selectedLevel === '' || course.level === selectedLevel;
-    const matchesFormat = selectedFormat === '' || course.format === selectedFormat;
-    const matchesCertification = selectedCertification === '' || 
-      (selectedCertification === 'certified' && course.certification) ||
-      (selectedCertification === 'non-certified' && !course.certification);
+  const handleSearch = async () => {
+    setLoading(true);
+    setError(null);
+    setHasSearched(true);
+    setCurrentPage(1);
+    setUsingFallback(true);
 
-    return matchesSearch && matchesLevel && matchesFormat && matchesCertification;
-  });
+    try {
+      // Usar datos locales directamente como solución temporal
+      let filteredResults = coursesData;
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+      // Aplicar filtros locales a los datos
+      filteredResults = filteredResults.filter(course => {
+        // Filtrar por término de búsqueda
+        if (searchTerm) {
+          const searchLower = searchTerm.toLowerCase();
+          const titleMatch = course.title?.toLowerCase().includes(searchLower);
+          const platformMatch = course.platform?.toLowerCase().includes(searchLower);
+          const techMatch = course.technology?.toLowerCase().includes(searchLower);
+          if (!titleMatch && !platformMatch && !techMatch) {
+            return false;
+          }
+        }
+
+        // Filtrar por ubicación
+        if (selectedLocation && !course.location?.toLowerCase().includes(selectedLocation.toLowerCase())) {
+          return false;
+        }
+
+        // Filtrar por categoría
+        if (selectedCategory && !course.category?.toLowerCase().includes(selectedCategory.toLowerCase())) {
+          return false;
+        }
+
+        // Filtrar por nivel
+        if (selectedLevel && !course.level?.toLowerCase().includes(selectedLevel.toLowerCase())) {
+          return false;
+        }
+
+        // Filtrar por formato
+        if (selectedFormat && !course.format?.toLowerCase().includes(selectedFormat.toLowerCase())) {
+          return false;
+        }
+
+        // Filtrar por idioma
+        if (selectedLanguage && !course.language?.toLowerCase().includes(selectedLanguage.toLowerCase())) {
+          return false;
+        }
+
+        return true;
+      });
+
+      setCourses(filteredResults.slice(0, RESULTS_PER_PAGE));
+    } catch (err) {
+      console.error('Error en búsqueda:', err);
+      setError('Error en la búsqueda. Mostrando todos los datos de ejemplo.');
+      setCourses(coursesData.slice(0, RESULTS_PER_PAGE));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLevelChange = (e) => {
-    setSelectedLevel(e.target.value);
-  };
+  const totalPages = Math.ceil(courses.length / RESULTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+  const endIndex = startIndex + RESULTS_PER_PAGE;
+  const displayedCourses = hasSearched ? courses.slice(startIndex, endIndex) : [];
 
-  const handleFormatChange = (e) => {
-    setSelectedFormat(e.target.value);
-  };
-
-  const handleCertificationChange = (e) => {
-    setSelectedCertification(e.target.value);
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedLocation('');
+    setSelectedLevel('');
+    setSelectedFormat('');
+    setSelectedCertification('');
+    setSelectedCategory('');
+    setSelectedLanguage('');
+    setSelectedPrice('');
+    setSelectedDuration('');
+    setHasSearched(false);
+    setCurrentPage(1);
+    setCourses([]);
+    setError(null);
   };
 
   return (
     <div className="course-search-page">
       <div className="search-header">
         <h1>Búsqueda de Cursos</h1>
-        <p className="subtitle">Mejora tus habilidades con formación profesional</p>
+        <p className="subtitle">Mejora tus habilidades con formación profesional en toda España</p>
       </div>
 
       <div className="search-container">
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Buscar por curso, plataforma o tecnología..."
+            placeholder="Buscar por curso, plataforma, tecnología..."
             value={searchTerm}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
             aria-label="Buscar cursos"
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
           />
         </div>
 
@@ -71,11 +140,28 @@ const CourseSearchPage = () => {
           <h3>Filtros</h3>
           
           <div className="filter-group">
+            <label htmlFor="location-filter">Ubicación:</label>
+            <select
+              id="location-filter"
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">Todas las ubicaciones</option>
+              {locations.map(location => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
             <label htmlFor="level-filter">Nivel:</label>
             <select
               id="level-filter"
               value={selectedLevel}
-              onChange={handleLevelChange}
+              onChange={(e) => setSelectedLevel(e.target.value)}
               className="filter-select"
             >
               <option value="">Todos los niveles</option>
@@ -92,7 +178,7 @@ const CourseSearchPage = () => {
             <select
               id="format-filter"
               value={selectedFormat}
-              onChange={handleFormatChange}
+              onChange={(e) => setSelectedFormat(e.target.value)}
               className="filter-select"
             >
               <option value="">Todos los formatos</option>
@@ -109,7 +195,7 @@ const CourseSearchPage = () => {
             <select
               id="certification-filter"
               value={selectedCertification}
-              onChange={handleCertificationChange}
+              onChange={(e) => setSelectedCertification(e.target.value)}
               className="filter-select"
             >
               <option value="">Todos</option>
@@ -119,35 +205,182 @@ const CourseSearchPage = () => {
           </div>
 
           <button
-            className="btn-clear-filters"
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedLevel('');
-              setSelectedFormat('');
-              setSelectedCertification('');
-            }}
+            className="btn-toggle-advanced"
+            onClick={() => setShowAdvanced(!showAdvanced)}
           >
-            Limpiar filtros
+            {showAdvanced ? 'Ocultar filtros avanzados' : 'Mostrar filtros avanzados'}
           </button>
+
+          {showAdvanced && (
+            <div className="advanced-filters">
+              <div className="filter-group">
+                <label htmlFor="category-filter">Categoría:</label>
+                <select
+                  id="category-filter"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">Todas las categorías</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="language-filter">Idioma:</label>
+                <select
+                  id="language-filter"
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">Todos los idiomas</option>
+                  {languages.map(language => (
+                    <option key={language} value={language}>
+                      {language}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="price-filter">Precio:</label>
+                <select
+                  id="price-filter"
+                  value={selectedPrice}
+                  onChange={(e) => setSelectedPrice(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">Todos los precios</option>
+                  {priceRanges.map(range => (
+                    <option key={range} value={range}>
+                      {range}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label htmlFor="duration-filter">Duración:</label>
+                <select
+                  id="duration-filter"
+                  value={selectedDuration}
+                  onChange={(e) => setSelectedDuration(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">Todas las duraciones</option>
+                  {durations.map(duration => (
+                    <option key={duration} value={duration}>
+                      {duration}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          <div className="filter-actions">
+            <button className="btn-search" onClick={handleSearch}>
+              Buscar
+            </button>
+            <button className="btn-clear-filters" onClick={handleClearFilters}>
+              Limpiar filtros
+            </button>
+          </div>
         </div>
 
         <div className="results-container">
-          <div className="results-header">
-            <span className="results-count">
-              {filteredCourses.length} {filteredCourses.length === 1 ? 'curso encontrado' : 'cursos encontrados'}
-            </span>
-          </div>
-
-          {filteredCourses.length > 0 ? (
-            <div className="courses-list">
-              {filteredCourses.map(course => (
-                <CourseCard key={course.id} course={course} />
-              ))}
+          {loading && (
+            <div className="loading-state">
+              <p>Buscando cursos...</p>
             </div>
-          ) : (
-            <div className="no-results">
-              <p>No se encontraron cursos con los filtros seleccionados.</p>
-              <p>Intenta ajustar tus criterios de búsqueda.</p>
+          )}
+
+          {hasSearched && !loading && (
+            <>
+              {error && (
+                <div className="error-state">
+                  <p>{error}</p>
+                </div>
+              )}
+              <div className="results-header">
+                <span className="results-count">
+                  {courses.length} {courses.length === 1 ? 'curso encontrado' : 'cursos encontrados'}
+                  {usingFallback && <span className="fallback-badge"> (Datos de ejemplo)</span>}
+                </span>
+                {totalPages > 1 && (
+                  <span className="pagination-info">
+                    Página {currentPage} de {totalPages}
+                  </span>
+                )}
+              </div>
+
+              {displayedCourses.length > 0 ? (
+                <>
+                  <div className="courses-list">
+                    {displayedCourses.map(course => (
+                      <CourseCard key={course.id} course={course} />
+                    ))}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="pagination">
+                      <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        Anterior
+                      </button>
+                      <div className="pagination-numbers">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          return (
+                            <button
+                              key={pageNum}
+                              className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
+                              onClick={() => setCurrentPage(pageNum)}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        Siguiente
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="no-results">
+                  <p>No se encontraron cursos con los filtros seleccionados.</p>
+                  <p>Intenta ajustar tus criterios de búsqueda.</p>
+                </div>
+              )}
+            </>
+          )}
+
+          {!hasSearched && !loading && (
+            <div className="search-prompt">
+              <p>Usa los filtros y haz clic en "Buscar" para ver cursos.</p>
             </div>
           )}
         </div>
