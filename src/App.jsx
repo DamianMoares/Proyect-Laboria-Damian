@@ -22,7 +22,7 @@ import MyApplicationsPage from './pages/aplicaciones/MyApplicationsPage';
 import SavedCoursesPage from './pages/cursos/SavedCoursesPage';
 import CurriculumPage from './pages/curriculo/CurriculumPage';
 import ApiStatusPage from './pages/admin/ApiStatusPage';
-import logoBlanco from './assets/img/Laboria_fondo_Negro.png';
+import logoBlanco from './assets/img/Laboria_Fondo_Negro.png';
 import './App.css';
 
 function Navbar() {
