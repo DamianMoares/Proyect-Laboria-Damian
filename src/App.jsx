@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import TabsNavigation from './components/navigation/TabsNavigation';
+import CookieConsent from './components/CookieConsent';
 import Home from './pages/inicio/Home';
 import JobSearchPage from './pages/empleos/JobSearchPage';
 import CourseSearchPage from './pages/cursos/CourseSearchPage';
@@ -160,9 +161,19 @@ function App() {
 
           <footer className="app-footer">
             <div className="container">
-              <p>&copy; 2026 Laboria . Todos los derechos reservados.</p>
+              <div className="footer-content">
+                <p>&copy; 2026 Laboria . Todos los derechos reservados.</p>
+                <div className="footer-legal">
+                  <a href="/legal/aviso-legal.html" target="_blank" rel="noopener noreferrer">Aviso Legal</a>
+                  <span className="footer-separator">|</span>
+                  <a href="/legal/politica-privacidad.html" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
+                  <span className="footer-separator">|</span>
+                  <a href="/legal/terminos-condiciones.html" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a>
+                </div>
+              </div>
             </div>
           </footer>
+          <CookieConsent />
         </div>
       </Router>
     </AuthProvider>

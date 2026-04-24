@@ -105,6 +105,51 @@ const CourseSearchPage = () => {
             return false;
           }
 
+          if (selectedCertification) {
+            const hasCertification = selectedCertification === 'certified';
+            if (course.certification !== hasCertification) {
+              return false;
+            }
+          }
+
+          if (selectedPrice) {
+            const priceLower = course.price?.toLowerCase() || '';
+            if (selectedPrice === 'Gratis') {
+              if (!priceLower.includes('gratis') && !priceLower.includes('free')) {
+                return false;
+              }
+            } else {
+              const priceNum = parseFloat(course.price?.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+              const priceMap = {
+                '0 - 50 €': [0, 50],
+                '50 - 100 €': [50, 100],
+                '100 - 200 €': [100, 200],
+                '200 - 500 €': [200, 500],
+                '500+ €': [500, Infinity]
+              };
+              const [min, max] = priceMap[selectedPrice] || [0, Infinity];
+              if (priceNum < min || priceNum > max) {
+                return false;
+              }
+            }
+          }
+
+          if (selectedDuration) {
+            const durationLower = course.duration?.toLowerCase() || '';
+            const durationMap = {
+              '< 10 horas': [0, 10],
+              '10 - 30 horas': [10, 30],
+              '30 - 60 horas': [30, 60],
+              '60 - 100 horas': [60, 100],
+              '100+ horas': [100, Infinity]
+            };
+            const [min, max] = durationMap[selectedDuration] || [0, Infinity];
+            const durationNum = parseFloat(durationLower.replace(/[^\d]/g, '')) || 0;
+            if (durationNum < min || durationNum > max) {
+              return false;
+            }
+          }
+
           return true;
         });
 
@@ -145,10 +190,55 @@ const CourseSearchPage = () => {
         }
 
         if (selectedLanguage && !course.language?.toLowerCase().includes(selectedLanguage.toLowerCase())) {
-          return false;
-        }
+            return false;
+          }
 
-        return true;
+          if (selectedCertification) {
+            const hasCertification = selectedCertification === 'certified';
+            if (course.certification !== hasCertification) {
+              return false;
+            }
+          }
+
+          if (selectedPrice) {
+            const priceLower = course.price?.toLowerCase() || '';
+            if (selectedPrice === 'Gratis') {
+              if (!priceLower.includes('gratis') && !priceLower.includes('free')) {
+                return false;
+              }
+            } else {
+              const priceNum = parseFloat(course.price?.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+              const priceMap = {
+                '0 - 50 €': [0, 50],
+                '50 - 100 €': [50, 100],
+                '100 - 200 €': [100, 200],
+                '200 - 500 €': [200, 500],
+                '500+ €': [500, Infinity]
+              };
+              const [min, max] = priceMap[selectedPrice] || [0, Infinity];
+              if (priceNum < min || priceNum > max) {
+                return false;
+              }
+            }
+          }
+
+          if (selectedDuration) {
+            const durationLower = course.duration?.toLowerCase() || '';
+            const durationMap = {
+              '< 10 horas': [0, 10],
+              '10 - 30 horas': [10, 30],
+              '30 - 60 horas': [30, 60],
+              '60 - 100 horas': [60, 100],
+              '100+ horas': [100, Infinity]
+            };
+            const [min, max] = durationMap[selectedDuration] || [0, Infinity];
+            const durationNum = parseFloat(durationLower.replace(/[^\d]/g, '')) || 0;
+            if (durationNum < min || durationNum > max) {
+              return false;
+            }
+          }
+
+          return true;
       });
 
       setCourses(filteredResults.slice(0, RESULTS_PER_PAGE));

@@ -30,6 +30,13 @@ const RegisterPage = () => {
     description: '',
     focus: ''
   });
+  const [legalConsents, setLegalConsents] = useState({
+    termsAccepted: false,
+    privacyAccepted: false,
+    cookiesEssential: true,
+    cookiesAnalytics: false,
+    cookiesMarketing: false
+  });
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -38,6 +45,13 @@ const RegisterPage = () => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
+    });
+  };
+
+  const handleConsentChange = (e) => {
+    setLegalConsents({
+      ...legalConsents,
+      [e.target.name]: e.target.checked
     });
   };
 
@@ -62,6 +76,16 @@ const RegisterPage = () => {
 
     if (formData.password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    if (!legalConsents.termsAccepted) {
+      setError('Debes aceptar los Términos y Condiciones para registrarte');
+      return;
+    }
+
+    if (!legalConsents.privacyAccepted) {
+      setError('Debes aceptar la Política de Privacidad para registrarte');
       return;
     }
 
@@ -106,6 +130,17 @@ const RegisterPage = () => {
     const result = register(userData);
     
     if (result.success) {
+      // Guardar consentimiento de cookies en localStorage
+      const cookieConsent = {
+        timestamp: Date.now(),
+        preferences: {
+          essential: legalConsents.cookiesEssential,
+          analytics: legalConsents.cookiesAnalytics,
+          marketing: legalConsents.cookiesMarketing
+        }
+      };
+      localStorage.setItem('cookieConsent', JSON.stringify(cookieConsent));
+      
       navigate(role === 'candidate' ? '/perfil/candidato' : '/perfil/empresa');
     } else {
       setError(result.error);
@@ -415,6 +450,91 @@ const RegisterPage = () => {
                   </div>
                 </>
               )}
+
+              <div className="legal-consents">
+                <h3>Términos Legales y Consentimientos</h3>
+                
+                <div className="consent-item">
+                  <label className="consent-label">
+                    <input
+                      type="checkbox"
+                      name="termsAccepted"
+                      checked={legalConsents.termsAccepted}
+                      onChange={handleConsentChange}
+                      required
+                    />
+                    <span>
+                      He leído y acepto los <a href="/legal/terminos-condiciones.html" target="_blank" rel="noopener noreferrer">Términos y Condiciones de Uso</a>
+                    </span>
+                  </label>
+                </div>
+
+                <div className="consent-item">
+                  <label className="consent-label">
+                    <input
+                      type="checkbox"
+                      name="privacyAccepted"
+                      checked={legalConsents.privacyAccepted}
+                      onChange={handleConsentChange}
+                      required
+                    />
+                    <span>
+                      He leído y acepto la <a href="/legal/politica-privacidad.html" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
+                    </span>
+                  </label>
+                </div>
+
+                <div className="consent-section">
+                  <h4>Preferencias de Cookies</h4>
+                  <p className="consent-description">
+                    Selecciona las categorías de cookies que deseas aceptar. 
+                    Las cookies esenciales son necesarias para el funcionamiento del sitio.
+                  </p>
+
+                  <div className="consent-item">
+                    <label className="consent-label">
+                      <input
+                        type="checkbox"
+                        name="cookiesEssential"
+                        checked={legalConsents.cookiesEssential}
+                        onChange={handleConsentChange}
+                        disabled
+                      />
+                      <span>
+                        <strong>Cookies Esenciales</strong> (necesarias, no se pueden desactivar)
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="consent-item">
+                    <label className="consent-label">
+                      <input
+                        type="checkbox"
+                        name="cookiesAnalytics"
+                        checked={legalConsents.cookiesAnalytics}
+                        onChange={handleConsentChange}
+                      />
+                      <span>
+                        <strong>Cookies de Análisis</strong> (para mejorar el sitio)
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="consent-item">
+                    <label className="consent-label">
+                      <input
+                        type="checkbox"
+                        name="cookiesMarketing"
+                        checked={legalConsents.cookiesMarketing}
+                        onChange={handleConsentChange}
+                      />
+                      <span>
+                        <strong>Cookies de Marketing</strong> (para anuncios personalizados)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
 
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={handleBack}>

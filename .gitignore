@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# DOC - Uncomment to exclude from git
 DOC
 .env
 dist

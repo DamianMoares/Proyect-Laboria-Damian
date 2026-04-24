@@ -83,6 +83,35 @@ const JobSearchPage = () => {
             return false;
           }
 
+          if (selectedSchedule) {
+            const scheduleMap = {
+              'Completa': 'full-time',
+              'Parcial': 'part-time',
+              'Jornada reducida': 'part-time',
+              'Flexible': 'flexible'
+            };
+            const expectedSchedule = scheduleMap[selectedSchedule] || selectedSchedule.toLowerCase();
+            if (!job.schedule?.toLowerCase().includes(expectedSchedule)) {
+              return false;
+            }
+          }
+
+          if (selectedSalary) {
+            const salaryNum = parseInt(job.salary?.replace(/\D/g, '')) || 0;
+            const salaryMap = {
+              '0 - 20000 €': [0, 20000],
+              '20000 - 30000 €': [20000, 30000],
+              '30000 - 40000 €': [30000, 40000],
+              '40000 - 50000 €': [40000, 50000],
+              '50000 - 60000 €': [50000, 60000],
+              '60000+ €': [60000, Infinity]
+            };
+            const [min, max] = salaryMap[selectedSalary] || [0, Infinity];
+            if (salaryNum < min || salaryNum > max) {
+              return false;
+            }
+          }
+
           return true;
         });
 
@@ -124,6 +153,35 @@ const JobSearchPage = () => {
 
         if (selectedContract && !job.contractType?.toLowerCase().includes(selectedContract.toLowerCase())) {
           return false;
+        }
+
+        if (selectedSchedule) {
+          const scheduleMap = {
+            'Completa': 'full-time',
+            'Parcial': 'part-time',
+            'Jornada reducida': 'part-time',
+            'Flexible': 'flexible'
+          };
+          const expectedSchedule = scheduleMap[selectedSchedule] || selectedSchedule.toLowerCase();
+          if (!job.schedule?.toLowerCase().includes(expectedSchedule)) {
+            return false;
+          }
+        }
+
+        if (selectedSalary) {
+          const salaryNum = parseInt(job.salary?.replace(/\D/g, '')) || 0;
+          const salaryMap = {
+            '0 - 20000 €': [0, 20000],
+            '20000 - 30000 €': [20000, 30000],
+            '30000 - 40000 €': [30000, 40000],
+            '40000 - 50000 €': [40000, 50000],
+            '50000 - 60000 €': [50000, 60000],
+            '60000+ €': [60000, Infinity]
+          };
+          const [min, max] = salaryMap[selectedSalary] || [0, Infinity];
+          if (salaryNum < min || salaryNum > max) {
+            return false;
+          }
         }
 
         return true;
