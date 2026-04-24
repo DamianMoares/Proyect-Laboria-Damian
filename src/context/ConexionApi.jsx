@@ -8,16 +8,16 @@ const API_CONFIG = {
   // APIs de empleo (REST APIs)
   JOBS_APIS: [
     {
-      name: 'Junta Castilla y León Empleo',
-      url: import.meta.env.VITE_JOBS_API_1_URL || 'https://data.opendatasoft.com/api/records/1.0/search/?dataset=ofertas-de-empleo@jcyl',
-      apiKey: import.meta.env.VITE_JOBS_API_1_KEY || '',
+      name: 'RemoteOK',
+      url: 'https://remoteok.com/api',
+      apiKey: '',
       enabled: true,
-      type: 'api', // Tipo: api o rss
+      type: 'api',
     },
     {
-      name: 'SerpApi Google Jobs',
-      url: import.meta.env.VITE_JOBS_API_2_URL || 'https://serpapi.com/search',
-      apiKey: import.meta.env.VITE_JOBS_API_2_KEY || '',
+      name: 'Remotive Remote Jobs',
+      url: import.meta.env.VITE_JOBS_API_5_URL || 'https://remotive.com/api/remote-jobs',
+      apiKey: import.meta.env.VITE_JOBS_API_5_KEY || '',
       enabled: true,
       type: 'api',
     },
@@ -36,23 +36,36 @@ const API_CONFIG = {
       type: 'api',
     },
     {
-      name: 'Remotive Remote Jobs',
-      url: import.meta.env.VITE_JOBS_API_5_URL || 'https://remotive.com/api/remote-jobs',
-      apiKey: import.meta.env.VITE_JOBS_API_5_KEY || '',
-      enabled: true,
-      type: 'api',
-    },
-    {
       name: 'Arbeitnow Job Board',
       url: import.meta.env.VITE_JOBS_API_6_URL || 'https://www.arbeitnow.com/api/job-board-api',
       apiKey: import.meta.env.VITE_JOBS_API_6_KEY || '',
       enabled: true,
       type: 'api',
     },
+    {
+      name: 'Junta Castilla y León Empleo',
+      url: import.meta.env.VITE_JOBS_API_1_URL || 'https://data.opendatasoft.com/api/records/1.0/search/?dataset=ofertas-de-empleo@jcyl',
+      apiKey: import.meta.env.VITE_JOBS_API_1_KEY || '',
+      enabled: true,
+      type: 'api',
+    },
+    {
+      name: 'SerpApi Google Jobs',
+      url: import.meta.env.VITE_JOBS_API_2_URL || 'https://serpapi.com/search',
+      apiKey: import.meta.env.VITE_JOBS_API_2_KEY || '',
+      enabled: true, // Habilitado si se configura API key
+      type: 'api',
+    },
   ],
 
   // RSS feeds de empleo
   JOBS_RSS: [
+    {
+      name: 'We Work Remotely',
+      url: 'https://weworkremotely.com/remote-jobs.rss',
+      enabled: true,
+      type: 'rss',
+    },
     {
       name: 'Indeed RSS',
       url: 'https://rss.indeed.com/rss?q=software+engineer&l=spain',
@@ -70,10 +83,31 @@ const API_CONFIG = {
   // APIs de cursos
   COURSES_APIS: [
     {
+      name: 'YouTube Data API',
+      url: import.meta.env.VITE_COURSES_YOUTUBE_URL || 'https://www.googleapis.com/youtube/v3/search',
+      apiKey: import.meta.env.VITE_COURSES_YOUTUBE_KEY || '',
+      enabled: true, // Habilitado si se configura API key
+      type: 'api',
+    },
+    {
+      name: 'Google Custom Search',
+      url: import.meta.env.VITE_COURSES_GOOGLE_SEARCH_URL || 'https://www.googleapis.com/customsearch/v1',
+      apiKey: import.meta.env.VITE_COURSES_GOOGLE_SEARCH_KEY || '',
+      enabled: true, // Habilitado si se configura API key
+      type: 'api',
+    },
+    {
+      name: 'Bing Search API',
+      url: import.meta.env.VITE_COURSES_BING_URL || 'https://api.bing.microsoft.com/v7.0/search',
+      apiKey: import.meta.env.VITE_COURSES_BING_KEY || '',
+      enabled: true, // Habilitado si se configura API key
+      type: 'api',
+    },
+    {
       name: 'Khan Academy',
       url: import.meta.env.VITE_COURSES_API_1_URL || 'https://www.khanacademy.org/api/v1/topic/root',
       apiKey: import.meta.env.VITE_COURSES_API_1_KEY || '',
-      enabled: true,
+      enabled: false, // Problemas de CORS conocidos
       type: 'api',
     },
     {
@@ -103,6 +137,24 @@ const API_CONFIG = {
     {
       name: 'edX Blog',
       url: 'https://blog.edx.org/feed',
+      enabled: true,
+      type: 'rss',
+    },
+    {
+      name: 'SEPE Formación',
+      url: 'https://www.sepe.es/rss/sepe/formacion.xml',
+      enabled: true,
+      type: 'rss',
+    },
+    {
+      name: 'MIT OpenCourseWare',
+      url: 'https://ocw.mit.edu/rss/courses/new.xml',
+      enabled: true,
+      type: 'rss',
+    },
+    {
+      name: 'TED-Ed',
+      url: 'https://ed.ted.com/rss',
       enabled: true,
       type: 'rss',
     },
@@ -264,28 +316,18 @@ export const searchJobs = async (filters = {}) => {
       const params = new URLSearchParams();
       
       // APIs públicas gratuitas con parámetros específicos
-      if (api.name === 'Junta Castilla y León Empleo') {
-        // API de Castilla y León - OpenDataSoft format
-        // La URL base ya tiene el dataset, solo agregar rows y start
-        params.append('rows', limit);
-        params.append('start', (page - 1) * limit);
+      if (api.name === 'RemoteOK') {
+        // RemoteOK API - devuelve array directo, no requiere parámetros
+        // Filtramos localmente por España
+        console.log(`Processing RemoteOK API`);
+      } else if (api.name === 'Remotive Remote Jobs') {
+        // Remotive usa parámetros específicos
+        if (query) params.append('search', query);
+        if (category) params.append('category', category);
+        params.append('limit', limit);
         
         const separator = url.includes('?') ? '&' : '?';
         url = `${url}${separator}${params.toString()}`;
-        console.log(`Final URL for JCyL: ${url}`);
-      } else if (api.name === 'SerpApi Google Jobs') {
-        // SerpApi Google Jobs - requiere API key
-        params.append('engine', 'google_jobs');
-        if (query) params.append('q', query);
-        else params.append('q', 'empleo España'); // Por defecto buscar empleo en España
-        if (location) params.append('location', location);
-        else params.append('location', 'Spain'); // Por defecto España
-        params.append('api_key', api.apiKey);
-        params.append('num', limit);
-        
-        const separator = url.includes('?') ? '&' : '?';
-        url = `${url}${separator}${params.toString()}`;
-        console.log(`Final URL for SerpApi: ${url}`);
       } else if (api.name === 'Jobicy Remote Jobs') {
         // Jobicy usa parámetros específicos - filtrar por España
         params.append('count', limit);
@@ -305,18 +347,33 @@ export const searchJobs = async (filters = {}) => {
         
         const separator = url.includes('?') ? '&' : '?';
         url = `${url}${separator}${params.toString()}`;
-      } else if (api.name === 'Remotive Remote Jobs') {
-        // Remotive usa parámetros específicos
-        if (query) params.append('search', query);
-        if (category) params.append('category', category);
-        params.append('limit', limit);
-        
-        const separator = url.includes('?') ? '&' : '?';
-        url = `${url}${separator}${params.toString()}`;
       } else if (api.name === 'Arbeitnow Job Board') {
         // Arbeitnow es una API simple sin parámetros de filtro
         // Devuelve todos los jobs, luego filtramos localmente
         // No agregar parámetros
+      } else if (api.name === 'Junta Castilla y León Empleo') {
+        // API de Castilla y León - OpenDataSoft format
+        // La URL base ya tiene el dataset, solo agregar rows y start
+        params.append('rows', limit);
+        params.append('start', (page - 1) * limit);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+        console.log(`Final URL for JCyL: ${url}`);
+      } else if (api.name === 'SerpApi Google Jobs') {
+        // SerpApi Google Jobs - requiere API key
+        console.log('Configurando SerpApi con API key:', api.apiKey ? 'Presente' : 'No presente');
+        params.append('engine', 'google_jobs');
+        if (query) params.append('q', query);
+        else params.append('q', 'empleo España'); // Por defecto buscar empleo en España
+        if (location) params.append('location', location);
+        else params.append('location', 'Spain'); // Por defecto España
+        params.append('api_key', api.apiKey);
+        params.append('num', limit);
+        
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+        console.log(`Final URL for SerpApi: ${url}`);
       }
 
       const headers = getHeaders(api.apiKey);
@@ -406,8 +463,50 @@ export const searchJobs = async (filters = {}) => {
     console.warn('Errores en algunas fuentes de empleo:', apiErrors);
   }
 
-  // Aplicar límite total a resultados combinados
-  return allResults.slice(0, limit);
+  // Filtrar por ubicación (España) y modalidad (remoto/híbrido)
+  const filteredResults = allResults.filter(job => {
+    // Filtro por ubicación - España
+    let locationMatch = true;
+    if (location && (location.toLowerCase().includes('españa') || location.toLowerCase().includes('spain'))) {
+      const jobLocation = (job.location || '').toLowerCase();
+      locationMatch = jobLocation.includes('españa') || 
+                      jobLocation.includes('spain') || 
+                      jobLocation.includes('es') ||
+                      jobLocation === 'remoto' || // Aceptar trabajos remotos
+                      jobLocation === 'no especificado';
+    }
+
+    // Filtro por modalidad de trabajo
+    let workModeMatch = true;
+    if (workMode) {
+      const jobWorkMode = (job.workMode || '').toLowerCase();
+      if (workMode.toLowerCase() === 'remoto') {
+        workModeMatch = jobWorkMode === 'remoto' || job.remote === true;
+      } else if (workMode.toLowerCase() === 'híbrido') {
+        workModeMatch = jobWorkMode === 'híbrido' || jobWorkMode === 'hybrid';
+      } else if (workMode.toLowerCase() === 'presencial') {
+        workModeMatch = jobWorkMode === 'presencial' || jobWorkMode === 'on-site' || jobWorkMode === 'onsite';
+      }
+    }
+
+    // Filtro por búsqueda (opcional) - busca en todos los campos sin restricción de sector
+    let searchMatch = true;
+    if (query && query.trim() !== '') {
+      const searchLower = query.toLowerCase();
+      const titleMatch = (job.title || '').toLowerCase().includes(searchLower);
+      const companyMatch = (job.company || '').toLowerCase().includes(searchLower);
+      const sectorMatch = (job.sector || '').toLowerCase().includes(searchLower);
+      const techMatch_field = (job.technology || '').toLowerCase().includes(searchLower);
+      const descMatch = (job.description || '').toLowerCase().includes(searchLower);
+      const locationMatch_search = (job.location || '').toLowerCase().includes(searchLower);
+      searchMatch = titleMatch || companyMatch || sectorMatch || techMatch_field || descMatch || locationMatch_search;
+    }
+
+    return locationMatch && workModeMatch && searchMatch;
+  });
+
+  // Aplicar límite total a resultados filtrados
+  return filteredResults.slice(0, limit);
 };
 
 /**
@@ -582,6 +681,100 @@ const normalizeJobDetails = (job) => {
   const rawContract = job.contract_type || job.employment_type || job.type || '';
   const rawSchedule = job.schedule || job.hours || '';
   
+  // Manejo especial para RemoteOK API
+  if (job.slug && job.company && job.tags) {
+    return {
+      id: job.slug || job.id,
+      title: job.position || job.title || 'Sin título',
+      company: job.company || 'Empresa no especificada',
+      location: job.location || 'Remoto',
+      workMode: 'Remoto', // RemoteOK es exclusivamente remoto
+      schedule: scheduleMap[job.time?.toLowerCase()] || job.time || 'Completa',
+      experienceLevel: experienceMap[job.seniority?.toLowerCase()] || job.seniority || 'No especificado',
+      salary: job.salary_min || job.salary_max ? `${job.salary_min || ''} - ${job.salary_max || ''}` : 'No especificado',
+      contractType: contractMap[job.job_type?.toLowerCase()] || job.job_type || 'No especificado',
+      sector: job.tags?.[0] || 'No especificado',
+      technology: job.tags?.join(', ') || 'No especificado',
+      description: stripHtml(job.description) || 'Sin descripción disponible',
+      requirements: job.tags || [],
+      benefits: [],
+      postedDate: job.epoch ? new Date(job.epoch * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      url: job.url || job.apply_url || '#',
+      remote: true,
+      logo: job.company_logo || '',
+    };
+  }
+  
+  // Manejo especial para Remotive API
+  if (job.url && job.company_name && job.categories) {
+    return {
+      id: job.id || job.slug,
+      title: job.title || 'Sin título',
+      company: job.company_name || 'Empresa no especificada',
+      location: job.candidate_required_location || 'Remoto',
+      workMode: 'Remoto', // Remotive es exclusivamente remoto
+      schedule: scheduleMap[job.job_type?.toLowerCase()] || job.job_type || 'Completa',
+      experienceLevel: experienceMap[job.experience?.toLowerCase()] || job.experience || 'No especificado',
+      salary: job.salary || 'No especificado',
+      contractType: contractMap[job.job_type?.toLowerCase()] || job.job_type || 'No especificado',
+      sector: job.categories?.[0]?.name || 'No especificado',
+      technology: job.tags?.join(', ') || 'No especificado',
+      description: stripHtml(job.description) || 'Sin descripción disponible',
+      requirements: job.tags || [],
+      benefits: [],
+      postedDate: job.publication_date || new Date().toISOString().split('T')[0],
+      url: job.url || '#',
+      remote: true,
+      logo: job.company_logo || '',
+    };
+  }
+
+  // Manejo especial para SerpApi Google Jobs
+  if (job.title && job.company_name && job.location) {
+    const scheduleType = job.detected_extensions?.schedule_type || 'No especificado';
+    const postedAt = job.detected_extensions?.posted_at || job.extensions?.[0] || '';
+    
+    // Determinar modalidad de trabajo
+    let workMode = 'Presencial';
+    if (job.detected_extensions?.schedule_type?.toLowerCase().includes('remote') || 
+        job.location?.toLowerCase().includes('remote')) {
+      workMode = 'Remoto';
+    } else if (job.location?.toLowerCase().includes('hybrid')) {
+      workMode = 'Híbrido';
+    }
+
+    // Extraer salario si existe
+    let salary = 'No especificado';
+    if (job.detected_extensions?.salary) {
+      salary = job.detected_extensions.salary;
+    } else {
+      // Buscar salario en extensions
+      const salaryExt = job.extensions?.find(ext => ext.includes('$') || ext.includes('€') || ext.includes('hour') || ext.includes('year'));
+      if (salaryExt) salary = salaryExt;
+    }
+
+    return {
+      id: job.job_id || job.share_link,
+      title: job.title || 'Sin título',
+      company: job.company_name || 'Empresa no especificada',
+      location: job.location || 'No especificado',
+      workMode: workMode,
+      schedule: scheduleMap[scheduleType?.toLowerCase()] || scheduleType || 'Completa',
+      experienceLevel: job.detected_extensions?.qualifications || 'No especificado',
+      salary: salary,
+      contractType: 'No especificado',
+      sector: job.via || 'No especificado',
+      technology: 'No especificado',
+      description: stripHtml(job.description) || 'Sin descripción disponible',
+      requirements: job.extensions || [],
+      benefits: job.extensions?.filter(ext => ext.includes('insurance') || ext.includes('benefit') || ext.includes('paid')) || [],
+      postedDate: postedAt || new Date().toISOString().split('T')[0],
+      url: job.source_link || job.share_link || '#',
+      remote: workMode === 'Remoto',
+      logo: job.thumbnail || '',
+    };
+  }
+  
   // Manejo especial para API de Castilla y León (OpenDataSoft format)
   if (job.fields) {
     const fields = job.fields;
@@ -604,55 +797,6 @@ const normalizeJobDetails = (job) => {
       url: fields.enlace_al_contenido || '#',
       remote: false,
       logo: '',
-    };
-  }
-  
-  // Manejo especial para SerpApi Google Jobs
-  if (job.job_id && job.detected_extensions) {
-    return {
-      id: job.job_id,
-      title: job.title || 'Sin título',
-      company: job.company_name || 'Empresa no especificada',
-      location: job.location || 'No especificado',
-      workMode: job.detected_extensions.schedule_type === 'REMOTE' ? 'Remoto' : 
-                job.detected_extensions.schedule_type === 'HYBRID' ? 'Híbrido' : 'Presencial',
-      schedule: job.detected_extensions.schedule_type || 'Completa',
-      experienceLevel: job.detected_extensions.experience_level || 'No especificado',
-      salary: job.detected_extensions.salary || 'No especificado',
-      contractType: job.detected_extensions.contract_type || 'No especificado',
-      sector: job.detected_extensions.industry || 'No especificado',
-      technology: job.detected_extensions.qualifications?.join(', ') || 'No especificado',
-      description: stripHtml(job.description) || 'Sin descripción disponible',
-      requirements: job.detected_extensions.qualifications || [],
-      benefits: job.detected_extensions.benefits || [],
-      postedDate: job.detected_extensions.posted_at || new Date().toISOString().split('T')[0],
-      url: job.apply_options?.[0]?.link || job.share_link || '#',
-      remote: job.detected_extensions.schedule_type === 'REMOTE',
-      logo: job.company_logo || '',
-    };
-  }
-  
-  // Manejo especial para InfoJobs API (cuando se habilite)
-  if (job.codigo && job.puesto) {
-    return {
-      id: job.codigo,
-      title: job.puesto || 'Sin título',
-      company: job.empresa || 'Empresa no especificada',
-      location: job.provincia || 'No especificado',
-      workMode: workModeMap[job.modalidad?.toLowerCase()] || job.modalidad || 'No especificado',
-      schedule: job.jornada || 'Completa',
-      experienceLevel: job.experiencia || 'No especificado',
-      salary: job.salario || 'No especificado',
-      contractType: contractMap[job.tipo_contrato?.toLowerCase()] || job.tipo_contrato || 'No especificado',
-      sector: job.categoria || 'No especificado',
-      technology: job.requisitos || 'No especificado',
-      description: stripHtml(job.descripcion) || 'Sin descripción disponible',
-      requirements: job.requisitos_minimos || [],
-      benefits: job.prestaciones || [],
-      postedDate: job.fecha_publicacion || new Date().toISOString().split('T')[0],
-      url: job.url || '#',
-      remote: job.teletrabajo || false,
-      logo: job.logo_empresa || '',
     };
   }
   
@@ -762,6 +906,115 @@ const normalizeCoursesData = (apiData) => {
  * @returns {Object} Datos normalizados
  */
 const normalizeCourseDetails = (course) => {
+  // Manejo especial para YouTube Data API
+  if (course.id && course.snippet && course.snippet.title) {
+    return {
+      id: course.id.videoId || course.id,
+      title: course.snippet.title,
+      provider: course.snippet.channelTitle || 'YouTube',
+      category: course.snippet.categoryId || 'Educación',
+      level: 'No especificado',
+      duration: 'No especificado',
+      language: course.snippet.defaultLanguage || 'es',
+      price: 'Gratis',
+      rating: 0,
+      reviews: 0,
+      students: 0,
+      description: course.snippet.description || 'Sin descripción',
+      requirements: [],
+      learningOutcomes: [],
+      syllabus: [],
+      imageUrl: course.snippet.thumbnails?.high?.url || course.snippet.thumbnails?.medium?.url || '',
+      url: `https://www.youtube.com/watch?v=${course.id.videoId || course.id}`,
+      certificate: false,
+      lastUpdated: course.snippet.publishedAt || new Date().toISOString(),
+      location: '',
+      mode: 'online',
+    };
+  }
+
+  // Manejo especial para Google Custom Search
+  if (course.title && course.link && course.snippet) {
+    return {
+      id: course.cacheId || course.link,
+      title: course.title,
+      provider: course.displayLink || 'Google Search',
+      category: 'No especificado',
+      level: 'No especificado',
+      duration: 'No especificado',
+      language: 'es',
+      price: 'No especificado',
+      rating: 0,
+      reviews: 0,
+      students: 0,
+      description: course.snippet || 'Sin descripción',
+      requirements: [],
+      learningOutcomes: [],
+      syllabus: [],
+      imageUrl: course.pagemap?.cse_image?.[0]?.src || '',
+      url: course.link,
+      certificate: false,
+      lastUpdated: new Date().toISOString(),
+      location: '',
+      mode: 'online',
+    };
+  }
+
+  // Manejo especial para Bing Search API
+  if (course.name && course.url && course.snippet) {
+    return {
+      id: course.id || course.url,
+      title: course.name,
+      provider: course.displayUrl || 'Bing Search',
+      category: 'No especificado',
+      level: 'No especificado',
+      duration: 'No especificado',
+      language: 'es',
+      price: 'No especificado',
+      rating: 0,
+      reviews: 0,
+      students: 0,
+      description: course.snippet || 'Sin descripción',
+      requirements: [],
+      learningOutcomes: [],
+      syllabus: [],
+      imageUrl: course.image?.thumbnailUrl || '',
+      url: course.url,
+      certificate: false,
+      lastUpdated: course.dateLastCrawled || new Date().toISOString(),
+      location: '',
+      mode: 'online',
+    };
+  }
+
+  // Manejo para RSS feeds (cursos de blogs)
+  if (course.title && course.link && course.description) {
+    return {
+      id: course.link,
+      title: course.title,
+      provider: course.source || 'Blog Educativo',
+      category: course.category || 'No especificado',
+      level: 'No especificado',
+      duration: 'No especificado',
+      language: 'es',
+      price: 'No especificado',
+      rating: 0,
+      reviews: 0,
+      students: 0,
+      description: stripHtml(course.description) || 'Sin descripción',
+      requirements: [],
+      learningOutcomes: [],
+      syllabus: [],
+      imageUrl: '',
+      url: course.link,
+      certificate: false,
+      lastUpdated: course.pubDate || new Date().toISOString(),
+      location: '',
+      mode: 'online',
+    };
+  }
+
+  // Normalización genérica para otras APIs
   return {
     id: course.id || course.course_id || course._id,
     title: course.title || course.course_title || course.name || 'Sin título',
@@ -855,14 +1108,59 @@ export const searchCourses = async (filters = {}) => {
   // Realizar peticiones a todas las APIs habilitadas en paralelo
   const apiPromises = enabledApis.map(async (api) => {
     try {
-      let url = buildAuthUrl(api.url, api.appId, api.apiKey);
+      let url = api.url;
+      const params = new URLSearchParams();
+      
+      // Configuración específica para cada API
+      if (api.name === 'YouTube Data API') {
+        if (!api.apiKey) return { source: api.name, data: [] };
+        params.append('part', 'snippet');
+        params.append('q', query || 'cursos');
+        params.append('type', 'video');
+        params.append('maxResults', limit);
+        params.append('key', api.apiKey);
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else if (api.name === 'Google Custom Search') {
+        if (!api.apiKey) return { source: api.name, data: [] };
+        params.append('q', query || 'cursos online');
+        params.append('cx', import.meta.env.VITE_GOOGLE_CSE_ID || '');
+        params.append('key', api.apiKey);
+        params.append('num', limit);
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else if (api.name === 'Bing Search API') {
+        if (!api.apiKey) return { source: api.name, data: [] };
+        params.append('q', query || 'cursos online');
+        params.append('count', limit);
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else {
+        url = buildAuthUrl(api.url, api.appId, api.apiKey);
+      }
       
       console.log(`Processing Course API: ${api.name}, URL: ${url}`);
       
       const headers = getHeaders(api.apiKey);
+      // Bing usa header diferente para API key
+      if (api.name === 'Bing Search API') {
+        headers['Ocp-Apim-Subscription-Key'] = api.apiKey;
+        delete headers['Authorization'];
+      }
+      
       const data = await fetchFromApi(url, headers, `buscar cursos en ${api.name}`);
       
-      const normalizedData = normalizeCoursesData(data);
+      // Extraer array de resultados según la API
+      let coursesData = data;
+      if (api.name === 'YouTube Data API') {
+        coursesData = data.items || [];
+      } else if (api.name === 'Google Custom Search') {
+        coursesData = data.items || [];
+      } else if (api.name === 'Bing Search API') {
+        coursesData = data.webPages?.value || [];
+      }
+      
+      const normalizedData = normalizeCoursesData(coursesData);
       
       return {
         source: api.name,
@@ -970,24 +1268,40 @@ export const checkApiConnection = async () => {
     }
 
     try {
-      // Todas las APIs de empleo son públicas gratuitas sin parámetros
-      // Usar URL directa
+      // Usar URL directa con timeout
       let url = api.url;
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
       
       const response = await fetch(url, {
         method: 'GET',
         headers: getHeaders(api.apiKey),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
+      
       status.jobs.push({
         name: api.name,
         connected: response.ok,
         error: response.ok ? null : `HTTP ${response.status}`,
+        note: response.ok ? 'Conexión exitosa' : 'Error en respuesta',
       });
     } catch (error) {
+      let errorMessage = error.message;
+      if (error.name === 'AbortError') {
+        errorMessage = 'Timeout - no respondió en 10 segundos';
+      } else if (error.message.includes('CORS')) {
+        errorMessage = 'Error CORS - API no permite llamadas desde navegador';
+      } else if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Error de red - posiblemente bloqueada por CORS';
+      }
+      
       status.jobs.push({
         name: api.name,
         connected: false,
-        error: error.message,
+        error: errorMessage,
       });
     }
   }
@@ -1004,28 +1318,154 @@ export const checkApiConnection = async () => {
     }
 
     try {
-      // Junta de Andalucía SAE usa URL directa sin parámetros
-      const url = api.url;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
       
-      const response = await fetch(url, {
+      const response = await fetch(api.url, {
         method: 'GET',
         headers: getHeaders(api.apiKey),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
+      
       status.courses.push({
         name: api.name,
         connected: response.ok,
         error: response.ok ? null : `HTTP ${response.status}`,
+        note: response.ok ? 'Conexión exitosa' : 'Error en respuesta',
       });
     } catch (error) {
+      let errorMessage = error.message;
+      if (error.name === 'AbortError') {
+        errorMessage = 'Timeout - no respondió en 10 segundos';
+      } else if (error.message.includes('CORS')) {
+        errorMessage = 'Error CORS - API no permite llamadas desde navegador';
+      } else if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Error de red - posiblemente bloqueada por CORS';
+      }
+      
       status.courses.push({
         name: api.name,
         connected: false,
-        error: error.message,
+        error: errorMessage,
       });
     }
   }
 
   return status;
+};
+
+/**
+ * Obtiene el total de ofertas de empleo disponibles de todas las APIs
+ * @returns {Promise<number>} Total de ofertas de empleo
+ */
+export const getTotalJobsCount = async () => {
+  let totalCount = 0;
+
+  for (const api of API_CONFIG.JOBS_APIS) {
+    if (!api.enabled || !api.url) {
+      continue;
+    }
+
+    try {
+      let url = api.url;
+      const params = new URLSearchParams();
+
+      // Para APIs que requieren parámetros específicos
+      if (api.name === 'Junta Castilla y León Empleo') {
+        params.append('rows', '0'); // Solo obtener count
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      } else if (api.name === 'SerpApi Google Jobs') {
+        if (!api.apiKey) continue;
+        params.append('engine', 'google_jobs');
+        params.append('q', 'empleo España');
+        params.append('api_key', api.apiKey);
+        params.append('num', '10'); // Obtener una muestra para estimar
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}${params.toString()}`;
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: getHeaders(api.apiKey),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Extraer el count según la estructura de cada API
+        if (api.name === 'Junta Castilla y León Empleo') {
+          totalCount += data.nhits || 0;
+        } else if (api.name === 'SerpApi Google Jobs') {
+          // SerpApi no devuelve total, usamos una estimación basada en los resultados
+          const jobsArray = data.jobs_results || [];
+          totalCount += jobsArray.length * 10; // Estimación conservadora
+        } else if (Array.isArray(data)) {
+          totalCount += data.length;
+        } else {
+          const jobsArray = data.jobs || data.results || data.data || data.items || data.records || [];
+          totalCount += jobsArray.length;
+        }
+      }
+    } catch (error) {
+      console.error(`Error al contar ofertas de ${api.name}:`, error);
+      continue;
+    }
+  }
+
+  return totalCount;
+};
+
+/**
+ * Obtiene el total de cursos disponibles de todas las APIs
+ * @returns {Promise<number>} Total de cursos
+ */
+export const getTotalCoursesCount = async () => {
+  let totalCount = 0;
+
+  for (const api of API_CONFIG.COURSES_APIS) {
+    if (!api.enabled || !api.url) {
+      continue;
+    }
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(api.url, {
+        method: 'GET',
+        headers: getHeaders(api.apiKey),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Extraer el count según la estructura de cada API
+        if (Array.isArray(data)) {
+          totalCount += data.length;
+        } else {
+          const coursesArray = data.courses || data.results || data.data || data.items || data.records || [];
+          totalCount += coursesArray.length;
+        }
+      }
+    } catch (error) {
+      console.error(`Error al contar cursos de ${api.name}:`, error);
+      continue;
+    }
+  }
+
+  return totalCount;
 };
 
 // Exportar configuración para uso en otros componentes

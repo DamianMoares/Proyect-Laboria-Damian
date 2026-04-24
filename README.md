@@ -1,30 +1,65 @@
-# Laboria 
+# Laboria - Portal de Empleo y Formación Profesional
 
-Portal web de búsqueda de empleo y formación profesional orientado al mercado español.
+Portal web frontend-only que agrega ofertas de empleo y cursos de formación profesional en España desde múltiples APIs públicas y feeds RSS.
 
-## Descripción
+## 📋 Descripción
 
-Laboria  es un portal que combina búsqueda de ofertas laborales con búsqueda de cursos de formación. Se diferencia de otros portales al integrar ambas vertientes en una sola plataforma, permitiendo a los usuarios encontrar empleo y mejorar sus habilidades profesionalmente.
+Laboria es un metabuscador que integra ofertas laborales y cursos educativos de diversas fuentes externas en una plataforma unificada. El proyecto se destaca por:
 
-## Características
+- **Metabuscador de Empleo**: Agrega ofertas de 7+ APIs (RemoteOK, Remotive, Junta Castilla y León, SerpApi, Jobicy, Himalayas, Arbeitnow) y feeds RSS
+- **Metabuscador de Cursos**: Integra cursos de YouTube Data API, Google Custom Search, Bing Search API, Coursera, edX, SEPE, MIT OpenCourseWare y TED-Ed
+- **Normalización de Datos**: Convierte datos de diferentes fuentes a un formato unificado
+- **Panel de Administración**: Verifica estado de APIs y ejecuta tests del sistema
+- **Sistema de Testing**: Tests automatizados con Vitest y React Testing Library
+- **Arquitectura Frontend-Only**: Sin backend propio, toda la lógica en el cliente
 
-- **Búsqueda de empleo**: Filtros por ubicación, modalidad, jornada, nivel, salario, tipo de contrato y sector.
-- **Búsqueda de cursos**: Filtros por tecnología, nivel, duración, formato y certificación.
-- **UI/UX**: Diseño limpio con paleta negro + dorado, responsive y accesible.
-- **Frontend-only**: Toda la lógica de búsqueda y filtrado se ejecuta en el cliente.
+## ✨ Características
 
-## Tecnologías
+### Búsqueda de Empleo
+- Filtros por ubicación, modalidad, categoría, nivel, salario, tipo de contrato
+- Búsqueda en tiempo real con debounce (500ms)
+- Normalización de datos de múltiples APIs
+- Sistema de fallback con datos locales
+- Paginación de resultados
 
-- React 18
-- Vite
-- React Router DOM 6
-- JavaScript (sin TypeScript)
+### Búsqueda de Cursos
+- Filtros por categoría, nivel, modalidad, idioma, duración, precio
+- Integración con APIs de búsqueda (YouTube, Google, Bing)
+- Feeds RSS de plataformas educativas
+- Normalización de datos de múltiples fuentes
+- Sistema de fallback con datos locales
 
-## Instalación
+### Panel de Administración
+- Verificación de estado de APIs en tiempo real
+- Ejecución de tests del sistema
+- Visualización de resultados de tests (18 tests)
+- Indicadores de carga animados
+- Pestañas separadas para APIs y Tests
+
+### Testing
+- 18 tests automatizados (Home, JobSearchPage, CourseSearchPage)
+- Stack: Vitest + React Testing Library
+- Panel de administración para ejecutar tests
+- Mock de APIs para testing aislado
+
+## 🛠 Stack Tecnológico
+
+- **Frontend**: React 18.3.1
+- **Bundler**: Vite 5.2.11
+- **Enrutamiento**: React Router DOM 6.22.3
+- **Testing**: Vitest 1.4.0 + React Testing Library 14.2.1
+- **Estilos**: CSS Variables (paleta negro + dorado)
+- **Lenguaje**: JavaScript (sin TypeScript)
+
+## 📦 Instalación
 
 ```bash
+
 # Instalar dependencias
 npm install
+
+# Crear archivo .env (ver sección Variables de Entorno)
+cp .env.example .env
 
 # Iniciar servidor de desarrollo
 npm run dev
@@ -34,69 +69,185 @@ npm run build
 
 # Preview de producción
 npm run preview
+
+# Ejecutar tests
+npm test
+
+# Ejecutar tests con UI
+npm run test:ui
 ```
 
-## Estructura del Proyecto
+## 🔐 Variables de Entorno
+
+Crear archivo `.env` en la raíz del proyecto:
+
+```bash
+# APIs de Empleo
+VITE_JOBS_API_2_KEY=tu_serpapi_key
+
+# APIs de Cursos
+VITE_COURSES_YOUTUBE_KEY=tu_youtube_api_key
+VITE_COURSES_GOOGLE_SEARCH_KEY=tu_google_search_key
+VITE_GOOGLE_CSE_ID=tu_custom_search_engine_id
+VITE_COURSES_BING_KEY=tu_bing_search_key
+```
+
+**Cómo obtener las API keys:**
+- YouTube: https://console.cloud.google.com/
+- Google Custom Search: https://programmablesearchengine.google.com/
+- Bing Search: https://www.microsoft.com/cognitive-services/
+- SerpApi: https://serpapi.com/
+
+## 📁 Estructura del Proyecto
 
 ```
-Laboria /
-├── DOC/                          # Documentación de mejoras
+Proyecto-Laboria-Damián/
+├── DOC/                          # Documentación del proyecto
+│   ├── 01-introduccion-proyecto.md
+│   ├── 02-arquitectura.md
+│   ├── 03-apis-integradas.md
+│   ├── 04-testing.md
+│   └── 05-futuras-mejoras.md
 ├── public/                       # Assets estáticos
 ├── src/
-│   ├── assets/                   # Imágenes, fuentes, iconos
 │   ├── components/               # Componentes reutilizables
-│   │   ├── common/              # Componentes genéricos
-│   │   ├── jobs/                # Componentes específicos de empleo
-│   │   └── courses/             # Componentes específicos de cursos
-│   ├── data/                     # Datos mock
+│   │   ├── courses/              # Componentes de cursos
+│   │   ├── empleos/              # Componentes de empleo
+│   │   └── ui/                   # Componentes genéricos
+│   ├── context/                  # Context API y conexiones
+│   │   └── ConexionApi.jsx       # Gestión de APIs
+│   ├── data/                     # Datos locales y mock
+│   │   ├── courses.json
 │   │   ├── jobs.json
-│   │   └── courses.json
-│   ├── hooks/                    # Custom hooks
-│   ├── i18n/                     # Configuración i18next
+│   │   └── searchData.js
 │   ├── pages/                    # Páginas principales
-│   ├── utils/                    # Utilidades
+│   │   ├── admin/                # Panel de administración
+│   │   │   └── ApiStatusPage.jsx
+│   │   ├── cursos/               # Páginas de cursos
+│   │   │   ├── CourseSearchPage.jsx
+│   │   │   └── CourseSearchPage.test.jsx
+│   │   ├── empleos/              # Páginas de empleo
+│   │   │   ├── JobSearchPage.jsx
+│   │   │   └── JobSearchPage.test.jsx
+│   │   └── inicio/               # Página de inicio
+│   │       ├── Home.jsx
+│   │       └── Home.test.jsx
+│   ├── test/                     # Setup de testing
+│   │   └── setup.js
 │   ├── App.jsx
 │   ├── main.jsx
 │   └── index.css
+├── .env                          # Variables de entorno (no en git)
+├── .env.example                  # Ejemplo de variables
+├── .gitignore
 ├── package.json
-├── vite.config.js
+├── vite.config.js                # Configuración de Vite + proxy
+├── vitest.config.js              # Configuración de tests
 └── README.md
 ```
 
-## Rutas
+## 🚀 Rutas
 
-- `/` - Home (landing page)
+- `/` - Home (landing page con estadísticas)
 - `/empleos` - Búsqueda de empleos
 - `/cursos` - Búsqueda de cursos
-- `/acerca-de` - Acerca de (en construcción)
-- `/faq` - FAQ (en construcción)
+- `/admin/api-status` - Panel de administración (APIs y Tests)
 
-## Estilos
+## 🎨 Estilos
 
-El proyecto utiliza una paleta de colores consistente:
+Paleta de colores consistente (negro + dorado):
 
 - **Negro base**: `#0a0a0a`
 - **Dorado acento**: `#d4af37`
 - **Dorado claro**: `#f4d03f`
 - **Gris medio**: `#2a2a2a`
+- **Verde éxito**: `#22c55e`
+- **Rojo error**: `#dc2626`
 
-## Datos de Ejemplo
+## 📚 Documentación
 
-El proyecto incluye datos mock en formato JSON:
+La documentación completa del proyecto está en la carpeta `DOC/`:
 
-- `src/data/jobs.json` - 8 ofertas de empleo
-- `src/data/courses.json` - 8 cursos de formación
+- **01-introduccion-proyecto.md**: Descripción general, objetivos, stack, instalación
+- **02-arquitectura.md**: Arquitectura del proyecto, patrones de diseño, flujo de datos
+- **03-apis-integradas.md**: Documentación detallada de todas las APIs y feeds RSS
+- **04-testing.md**: Stack de testing, configuración, tests implementados
+- **05-futuras-mejoras.md**: Roadmap de mejoras prioritarias y futuras
 
-## Próximos Pasos
+## 🔧 Configuración de Proxy
 
-- Implementar páginas de detalle (JobDetailPage, CourseDetailPage)
-- Configurar i18next para internacionalización
-- Crear custom hooks (useJobSearch, useCourseSearch)
-- Añadir paginación
-- Implementar favoritos con localStorage
-- Añadir modo oscuro/claro
+El proyecto usa proxy Vite para evitar CORS:
 
-## Licencia
+```javascript
+// vite.config.js
+server: {
+  proxy: {
+    '/api/jcyl': 'https://www.jcyl.es',
+    '/api/serpapi': 'https://serpapi.com',
+    '/api/jobicy': 'https://jobicy.com',
+    '/api/himalayas': 'https://himalayas.app',
+    '/api/remotive': 'https://remotive.com',
+    '/api/arbeitnow': 'https://www.arbeitnow.com',
+  }
+}
+```
 
-© 2024 Laboria . Todos los derechos reservados.
-# Proyect-Laboria-Damian
+## 🧪 Testing
+
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Ejecutar tests con interfaz visual
+npm run test:ui
+
+# Ejecutar tests en modo watch
+npm test -- --watch
+
+# Ejecutar tests con coverage
+npm test -- --coverage
+```
+
+**Tests implementados:**
+- Home Page: 6 tests
+- JobSearchPage: 6 tests
+- CourseSearchPage: 6 tests
+- Total: 18 tests
+
+## 📊 APIs Integradas
+
+### Empleo (7 APIs + 3 RSS)
+- RemoteOK, Remotive, Junta Castilla y León, SerpApi, Jobicy, Himalayas, Arbeitnow
+- RSS: InfoJobs, LinkedIn Jobs, Glassdoor Blog
+
+### Cursos (3 APIs + 5 RSS)
+- YouTube Data API, Google Custom Search, Bing Search API
+- RSS: Coursera Blog, edX Blog, SEPE Formación, MIT OpenCourseWare, TED-Ed
+
+Ver `DOC/03-apis-integradas.md` para documentación detallada.
+
+## 🚧 Estado del Proyecto
+
+### ✅ Completado
+- Metabuscador de empleo con 7+ APIs
+- Metabuscador de cursos con 3 APIs + 5 RSS feeds
+- Normalización de datos de múltiples fuentes
+- Panel de administración con estado de APIs
+- Sistema de testing con 18 tests
+- Sistema de fallback con datos locales
+- Configuración de proxy para CORS
+- Documentación completa en DOC/
+
+### 🔄 En Progreso
+- Integración real de tests en panel admin (actualmente simulado)
+
+### 📋 Futuras Mejoras
+Ver `DOC/05-futuras-mejoras.md` para roadmap completo de 22 mejoras priorizadas.
+
+## 🤝 Contribución
+
+Este es un proyecto personal/educativo. Las contribuciones son bienvenidas a través de pull requests.
+
+## 📄 Licencia
+
+© 2024 Laboria. Todos los derechos reservados.

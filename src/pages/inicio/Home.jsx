@@ -1,9 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logoNegro from '../../assets/img/Laboria_Fondo_Negro.png';
+import { getTotalJobsCount, getTotalCoursesCount } from '../../context/ConexionApi';
 import './Home.css';
 
 const Home = () => {
+  const [jobsCount, setJobsCount] = useState(0);
+  const [coursesCount, setCoursesCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const [jobs, courses] = await Promise.all([
+          getTotalJobsCount(),
+          getTotalCoursesCount(),
+        ]);
+        setJobsCount(jobs);
+        setCoursesCount(courses);
+      } catch (error) {
+        console.error('Error al obtener los totales:', error);
+        // Valores por defecto en caso de error
+        setJobsCount(1500);
+        setCoursesCount(1850);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCounts();
+  }, []);
+
   return (
     <div className="home-page">
       <header className="hero">
@@ -60,11 +87,11 @@ const Home = () => {
         <div className="container">
           <div className="stats-grid">
             <div className="stat-item">
-              <span className="stat-number">1500+</span>
+              <span className="stat-number">{loading ? '...' : `${jobsCount}+`}</span>
               <span className="stat-label">Ofertas de empleo</span>
             </div>
             <div className="stat-item">
-              <span className="stat-number">1850+</span>
+              <span className="stat-number">{loading ? '...' : `${coursesCount}+`}</span>
               <span className="stat-label">Cursos disponibles</span>
             </div>
             {/* <div className="stat-item">

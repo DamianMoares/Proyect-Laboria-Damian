@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import coursesData from '../../data/courses.json';
 import { spainMunicipalities } from '../../data/searchData';
 import { searchCourses } from '../../context/ConexionApi';
@@ -22,6 +22,7 @@ const CourseSearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [debounceTimer, setDebounceTimer] = useState(null);
 
   const RESULTS_PER_PAGE = 50;
 
@@ -33,20 +34,90 @@ const CourseSearchPage = () => {
   const priceRanges = ['Gratis', '0 - 50 €', '50 - 100 €', '100 - 200 €', '200 - 500 €', '500+ €'];
   const durations = ['< 10 horas', '10 - 30 horas', '30 - 60 horas', '60 - 100 horas', '100+ horas'];
 
+  // Debounce para búsqueda en tiempo real
+  const debouncedSearch = useCallback((searchValue) => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+
+    const newTimer = setTimeout(() => {
+      if (searchValue.trim() !== '') {
+        handleSearch();
+      }
+    }, 500); // 500ms de debounce
+
+    setDebounceTimer(newTimer);
+  }, [debounceTimer, searchTerm, selectedCategory, selectedLevel, selectedFormat, selectedLocation, selectedLanguage]);
+
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
     setHasSearched(true);
     setCurrentPage(1);
-    setUsingFallback(true);
+    setUsingFallback(false);
 
     try {
-      // Usar datos locales directamente como solución temporal
-      let filteredResults = coursesData;
+      // Usar API real para buscar cursos
+      const apiResults = await searchCourses({
+        query: searchTerm,
+        category: selectedCategory,
+        level: selectedLevel,
+        mode: selectedFormat,
+        limit: RESULTS_PER_PAGE,
+      });
 
-      // Aplicar filtros locales a los datos
+      if (apiResults && apiResults.length > 0) {
+        setCourses(apiResults);
+      } else {
+        // Fallback a datos locales si no hay resultados de la API
+        console.warn('No se obtuvieron resultados de la API, usando datos locales');
+        setUsingFallback(true);
+        let filteredResults = coursesData;
+
+        filteredResults = filteredResults.filter(course => {
+          if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const titleMatch = course.title?.toLowerCase().includes(searchLower);
+            const platformMatch = course.platform?.toLowerCase().includes(searchLower);
+            const techMatch = course.technology?.toLowerCase().includes(searchLower);
+            if (!titleMatch && !platformMatch && !techMatch) {
+              return false;
+            }
+          }
+
+          if (selectedLocation && !course.location?.toLowerCase().includes(selectedLocation.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedCategory && !course.category?.toLowerCase().includes(selectedCategory.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedLevel && !course.level?.toLowerCase().includes(selectedLevel.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedFormat && !course.format?.toLowerCase().includes(selectedFormat.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedLanguage && !course.language?.toLowerCase().includes(selectedLanguage.toLowerCase())) {
+            return false;
+          }
+
+          return true;
+        });
+
+        setCourses(filteredResults.slice(0, RESULTS_PER_PAGE));
+      }
+    } catch (err) {
+      console.error('Error en búsqueda de API:', err);
+      setError('Error al conectar con las APIs. Mostrando datos de ejemplo.');
+      setUsingFallback(true);
+
+      // Fallback a datos locales en caso de error
+      let filteredResults = coursesData;
       filteredResults = filteredResults.filter(course => {
-        // Filtrar por término de búsqueda
         if (searchTerm) {
           const searchLower = searchTerm.toLowerCase();
           const titleMatch = course.title?.toLowerCase().includes(searchLower);
@@ -57,27 +128,22 @@ const CourseSearchPage = () => {
           }
         }
 
-        // Filtrar por ubicación
         if (selectedLocation && !course.location?.toLowerCase().includes(selectedLocation.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por categoría
         if (selectedCategory && !course.category?.toLowerCase().includes(selectedCategory.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por nivel
         if (selectedLevel && !course.level?.toLowerCase().includes(selectedLevel.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por formato
         if (selectedFormat && !course.format?.toLowerCase().includes(selectedFormat.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por idioma
         if (selectedLanguage && !course.language?.toLowerCase().includes(selectedLanguage.toLowerCase())) {
           return false;
         }
@@ -86,10 +152,6 @@ const CourseSearchPage = () => {
       });
 
       setCourses(filteredResults.slice(0, RESULTS_PER_PAGE));
-    } catch (err) {
-      console.error('Error en búsqueda:', err);
-      setError('Error en la búsqueda. Mostrando todos los datos de ejemplo.');
-      setCourses(coursesData.slice(0, RESULTS_PER_PAGE));
     } finally {
       setLoading(false);
     }

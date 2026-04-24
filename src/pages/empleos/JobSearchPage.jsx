@@ -32,15 +32,70 @@ const JobSearchPage = () => {
     setError(null);
     setHasSearched(true);
     setCurrentPage(1);
-    setUsingFallback(true);
+    setUsingFallback(false);
 
     try {
-      // Usar datos locales directamente como solución temporal
-      let filteredResults = jobsData;
+      // Usar API real para buscar ofertas
+      const apiResults = await searchJobs({
+        query: searchTerm,
+        location: selectedLocation,
+        category: selectedCategory,
+        workMode: selectedWorkMode,
+        limit: RESULTS_PER_PAGE,
+      });
 
-      // Aplicar filtros locales a los datos
+      if (apiResults && apiResults.length > 0) {
+        setJobs(apiResults);
+      } else {
+        // Fallback a datos locales si no hay resultados de la API
+        console.warn('No se obtuvieron resultados de la API, usando datos locales');
+        setUsingFallback(true);
+        let filteredResults = jobsData;
+
+        filteredResults = filteredResults.filter(job => {
+          if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            const titleMatch = job.title?.toLowerCase().includes(searchLower);
+            const companyMatch = job.company?.toLowerCase().includes(searchLower);
+            const techMatch = job.technology?.toLowerCase().includes(searchLower);
+            if (!titleMatch && !companyMatch && !techMatch) {
+              return false;
+            }
+          }
+
+          if (selectedLocation && !job.location?.toLowerCase().includes(selectedLocation.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedCategory && !job.sector?.toLowerCase().includes(selectedCategory.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedWorkMode && !job.workMode?.toLowerCase().includes(selectedWorkMode.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedExperience && !job.experienceLevel?.toLowerCase().includes(selectedExperience.toLowerCase())) {
+            return false;
+          }
+
+          if (selectedContract && !job.contractType?.toLowerCase().includes(selectedContract.toLowerCase())) {
+            return false;
+          }
+
+          return true;
+        });
+
+        setJobs(filteredResults.slice(0, RESULTS_PER_PAGE));
+      }
+    } catch (err) {
+      console.error('Error en búsqueda de API:', err);
+      setError('Error al conectar con las APIs. Mostrando datos de ejemplo.');
+      setUsingFallback(true);
+      
+      // Fallback a datos locales en caso de error
+      let filteredResults = jobsData;
       filteredResults = filteredResults.filter(job => {
-        // Filtrar por término de búsqueda
         if (searchTerm) {
           const searchLower = searchTerm.toLowerCase();
           const titleMatch = job.title?.toLowerCase().includes(searchLower);
@@ -51,27 +106,22 @@ const JobSearchPage = () => {
           }
         }
 
-        // Filtrar por ubicación
         if (selectedLocation && !job.location?.toLowerCase().includes(selectedLocation.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por categoría
         if (selectedCategory && !job.sector?.toLowerCase().includes(selectedCategory.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por modalidad
         if (selectedWorkMode && !job.workMode?.toLowerCase().includes(selectedWorkMode.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por experiencia
         if (selectedExperience && !job.experienceLevel?.toLowerCase().includes(selectedExperience.toLowerCase())) {
           return false;
         }
 
-        // Filtrar por contrato
         if (selectedContract && !job.contractType?.toLowerCase().includes(selectedContract.toLowerCase())) {
           return false;
         }
@@ -80,10 +130,6 @@ const JobSearchPage = () => {
       });
 
       setJobs(filteredResults.slice(0, RESULTS_PER_PAGE));
-    } catch (err) {
-      console.error('Error en búsqueda:', err);
-      setError('Error en la búsqueda. Mostrando todos los datos de ejemplo.');
-      setJobs(jobsData.slice(0, RESULTS_PER_PAGE));
     } finally {
       setLoading(false);
     }
