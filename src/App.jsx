@@ -164,11 +164,11 @@ function App() {
               <div className="footer-content">
                 <p>&copy; 2026 Laboria . Todos los derechos reservados.</p>
                 <div className="footer-legal">
-                  <a href="/legal/aviso-legal.html" target="_blank" rel="noopener noreferrer">Aviso Legal</a>
+                  <a href="/legal/aviso-legal.html" target="_blank" rel="noopener noreferrer">Aviso Legal </a>
                   <span className="footer-separator">|</span>
-                  <a href="/legal/politica-privacidad.html" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
+                  <a href="/legal/politica-privacidad.html" target="_blank" rel="noopener noreferrer"> Política de Privacidad </a>
                   <span className="footer-separator">|</span>
-                  <a href="/legal/terminos-condiciones.html" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a>
+                  <a href="/legal/terminos-condiciones.html" target="_blank" rel="noopener noreferrer"> Términos y Condiciones</a>
                 </div>
               </div>
             </div>

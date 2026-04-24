@@ -32,22 +32,17 @@ const CookieConsent = () => {
 
   const applyConsent = (prefs) => {
     // Aquí se pueden cargar scripts según las preferencias
-    console.log('Consentimiento aplicado:', prefs);
     
     // Ejemplo: cargar Google Analytics si analytics es true
     if (prefs.analytics) {
-      console.log('Cargando Google Analytics...');
       // window.gtag('consent', 'update', { 'analytics_storage': 'granted' });
     } else {
-      console.log('Bloqueando Google Analytics...');
       // window.gtag('consent', 'update', { 'analytics_storage': 'denied' });
     }
     
     // Ejemplo: cargar scripts de marketing si marketing es true
     if (prefs.marketing) {
-      console.log('Cargando scripts de marketing...');
-    } else {
-      console.log('Bloqueando scripts de marketing...');
+      // Cargar scripts de marketing
     }
   };
 

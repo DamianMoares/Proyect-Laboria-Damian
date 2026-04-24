@@ -11,7 +11,7 @@ const API_CONFIG = {
       name: 'RemoteOK',
       url: 'https://remoteok.com/api',
       apiKey: '',
-      enabled: true,
+      enabled: false, // Deshabilitado temporalmente por error de CORS
       type: 'api',
     },
     {
@@ -53,7 +53,7 @@ const API_CONFIG = {
       name: 'SerpApi Google Jobs',
       url: import.meta.env.VITE_JOBS_API_2_URL || 'https://serpapi.com/search',
       apiKey: import.meta.env.VITE_JOBS_API_2_KEY || '',
-      enabled: true, // Habilitado si se configura API key
+      enabled: false, // Deshabilitado temporalmente por error de CORS
       type: 'api',
     },
   ],
@@ -86,21 +86,21 @@ const API_CONFIG = {
       name: 'YouTube Data API',
       url: import.meta.env.VITE_COURSES_YOUTUBE_URL || 'https://www.googleapis.com/youtube/v3/search',
       apiKey: import.meta.env.VITE_COURSES_YOUTUBE_KEY || '',
-      enabled: true, // Habilitado si se configura API key
+      enabled: false, // Deshabilitado temporalmente por error 401 Unauthorized
       type: 'api',
     },
     {
       name: 'Google Custom Search',
       url: import.meta.env.VITE_COURSES_GOOGLE_SEARCH_URL || 'https://www.googleapis.com/customsearch/v1',
       apiKey: import.meta.env.VITE_COURSES_GOOGLE_SEARCH_KEY || '',
-      enabled: true, // Habilitado si se configura API key
+      enabled: false, // Deshabilitado temporalmente por error 401 Unauthorized
       type: 'api',
     },
     {
       name: 'Bing Search API',
       url: import.meta.env.VITE_COURSES_BING_URL || 'https://api.bing.microsoft.com/v7.0/search',
       apiKey: import.meta.env.VITE_COURSES_BING_KEY || '',
-      enabled: true, // Habilitado si se configura API key
+      enabled: false, // Deshabilitado temporalmente por error 404 Resource Not Found
       type: 'api',
     },
     {
