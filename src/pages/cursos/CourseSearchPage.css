@@ -325,23 +325,58 @@
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .search-container {
+    max-width: 100%;
+    padding: 0 var(--spacing-lg);
+  }
+
+  .search-header h1 {
+    font-size: 2.2rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .search-container {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .filters-sidebar {
     position: static;
     margin-bottom: var(--spacing-lg);
   }
-}
 
-@media (max-width: 768px) {
   .search-header h1 {
     font-size: 2rem;
   }
+}
+
+@media (max-width: 768px) {
+  .course-search-page {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .search-header {
+    padding: var(--spacing-lg) 0;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .search-header h1 {
+    font-size: 1.8rem;
+  }
 
   .subtitle {
+    font-size: 1rem;
+  }
+
+  .search-container {
+    padding: 0 var(--spacing-md);
+    gap: 20px;
+  }
+
+  .search-input {
+    padding: var(--spacing-md);
     font-size: 1rem;
   }
 
@@ -352,6 +387,44 @@
 
   .course-stats {
     flex-direction: column;
-    gap: var(--spacing-md);
+  }
+
+  .courses-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .search-container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .filter-group {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .filter-select {
+    font-size: 0.9rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .btn-search,
+  .btn-clear-filters {
+    width: 100%;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .pagination-btn,
+  .pagination-number {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
   }
 }

@@ -8,6 +8,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showDemoAccounts, setShowDemoAccounts] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -32,6 +33,11 @@ const LoginPage = () => {
     } else {
       setError(result.error);
     }
+  };
+
+  const handleFillDemo = (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
   };
 
   return (
@@ -82,19 +88,40 @@ const LoginPage = () => {
           </div>
 
           <div className="demo-accounts">
-            <h3>Cuentas de demo</h3>
-            <div className="demo-account">
-              <strong>Candidato:</strong> candidato@test.com / password123
-            </div>
-            <div className="demo-account">
-              <strong>Empresa (empleados):</strong> empresa@test.com / password123
-            </div>
-            <div className="demo-account">
-              <strong>Empresa (estudiantes):</strong> empresa-estudiantes@test.com / password123
-            </div>
-            <div className="demo-account">
-              <strong>Empresa (híbrida):</strong> empresa-hibrida@test.com / password123
-            </div>
+            <button 
+              className="demo-accounts-toggle"
+              onClick={() => setShowDemoAccounts(!showDemoAccounts)}
+            >
+              <h3>Cuentas de demo {showDemoAccounts ? '▼' : '▶'}</h3>
+            </button>
+            {showDemoAccounts && (
+              <div className="demo-accounts-list">
+                <div 
+                  className="demo-account clickable"
+                  onClick={() => handleFillDemo('candidato@test.com', 'password123')}
+                >
+                  <strong>Candidato:</strong> candidato@test.com / password123
+                </div>
+                <div 
+                  className="demo-account clickable"
+                  onClick={() => handleFillDemo('empresa@test.com', 'password123')}
+                >
+                  <strong>Empresa (empleados):</strong> empresa@test.com / password123
+                </div>
+                <div 
+                  className="demo-account clickable"
+                  onClick={() => handleFillDemo('empresa-estudiantes@test.com', 'password123')}
+                >
+                  <strong>Empresa (estudiantes):</strong> empresa-estudiantes@test.com / password123
+                </div>
+                <div 
+                  className="demo-account clickable"
+                  onClick={() => handleFillDemo('empresa-hibrida@test.com', 'password123')}
+                >
+                  <strong>Empresa (híbrida):</strong> empresa-hibrida@test.com / password123
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

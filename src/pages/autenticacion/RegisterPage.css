@@ -2,13 +2,11 @@
 .auth-page {
   min-height: 100vh;
   padding: var(--spacing-xl) 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  
 }
 
 .auth-card {
-  max-width: 700px;
+  max-width: 1200vh;
   width: 100%;
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
@@ -25,33 +23,34 @@
 }
 
 .auth-logo {
-  max-width: 150px;
+  max-width: 180px;
   height: auto;
   margin-bottom: var(--spacing-md);
 }
 
 .auth-header h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: var(--color-gold);
   margin-bottom: var(--spacing-sm);
+  font-weight: 700;
 }
 
 .auth-subtitle {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--color-text-secondary);
 }
 
 .role-selection h2 {
   text-align: center;
   color: var(--color-gold);
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin-bottom: var(--spacing-xl);
 }
 
 .role-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
 }
 
@@ -72,19 +71,19 @@
 }
 
 .role-icon {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: var(--spacing-md);
 }
 
 .role-card h3 {
   color: var(--color-gold);
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   margin-bottom: var(--spacing-sm);
 }
 
 .role-card p {
   color: var(--color-text-secondary);
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -96,14 +95,14 @@
   background-color: rgba(255, 0, 0, 0.1);
   border: 1px solid #ff4444;
   color: #ff4444;
-  padding: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--border-radius-md);
   margin-bottom: var(--spacing-lg);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .form-group {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
 .form-group label {
@@ -111,32 +110,41 @@
   color: var(--color-text-primary);
   font-weight: 500;
   margin-bottom: var(--spacing-sm);
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: var(--spacing-md);
-  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1.05rem;
+  border: 2px solid var(--color-border);
+  transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--color-gold);
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px;
 }
 
 .form-actions {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   margin-top: var(--spacing-xl);
 }
 
 .form-actions button {
   flex: 1;
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .auth-footer {

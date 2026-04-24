@@ -28,6 +28,7 @@ import './App.css';
 function Navbar() {
   const { user, isAuthenticated, logout, isCandidate, isAnyCompany } = useAuth();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleLogout = () => {
     logout();
@@ -38,47 +39,69 @@ function Navbar() {
     navigate('/panel');
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
     <nav className="navbar">
       <div className="container navbar-container">
-        <Link to="/" className="navbar-logo">
+        <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
           <img src={logoBlanco} alt="Laboria " className="navbar-logo-img" />
         </Link>
-        <ul className="navbar-menu">
+        <button 
+          className="navbar-toggle" 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+        {mobileMenuOpen && (
+          <div className="navbar-overlay" onClick={closeMobileMenu}></div>
+        )}
+        <ul className={`navbar-menu ${mobileMenuOpen ? 'open' : ''}`}>
           <li className="navbar-item">
-            <Link to="/" className="navbar-link">
+            <Link to="/" className="navbar-link" onClick={closeMobileMenu}>
               Inicio
             </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/empleos" className="navbar-link">
+            <Link to="/empleos" className="navbar-link" onClick={closeMobileMenu}>
               Empleos
             </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/cursos" className="navbar-link">
+            <Link to="/cursos" className="navbar-link" onClick={closeMobileMenu}>
               Cursos
             </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/acerca-de" className="navbar-link">
+            <Link to="/acerca-de" className="navbar-link" onClick={closeMobileMenu}>
               Acerca de
             </Link>
           </li>
           <li className="navbar-item">
-            <Link to="/faq" className="navbar-link">
+            <Link to="/faq" className="navbar-link" onClick={closeMobileMenu}>
               FAQ
             </Link>
           </li>
           {isAuthenticated ? (
             <>
               <li className="navbar-item">
-                <button onClick={handleProfileClick} className="navbar-link profile-button">
+                <button onClick={() => { handleProfileClick(); closeMobileMenu(); }} className="navbar-link profile-button">
                   Mi Perfil
                 </button>
               </li>
               <li className="navbar-item">
-                <button onClick={handleLogout} className="navbar-link logout-button">
+                <button onClick={() => { handleLogout(); closeMobileMenu(); }} className="navbar-link logout-button">
                   Cerrar Sesión
                 </button>
               </li>
@@ -86,12 +109,12 @@ function Navbar() {
           ) : (
             <>
               <li className="navbar-item">
-                <Link to="/login" className="navbar-link login-button">
+                <Link to="/login" className="navbar-link login-button" onClick={closeMobileMenu}>
                   Iniciar Sesión
                 </Link>
               </li>
               <li className="navbar-item">
-                <Link to="/registro" className="navbar-link register-button">
+                <Link to="/registro" className="navbar-link register-button" onClick={closeMobileMenu}>
                   Registrarse
                 </Link>
               </li>
