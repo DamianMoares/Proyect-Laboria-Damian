@@ -160,7 +160,7 @@ function App() {
 
           <footer className="app-footer">
             <div className="container">
-              <p>&copy; 2024 Laboria . Todos los derechos reservados.</p>
+              <p>&copy; 2026 Laboria . Todos los derechos reservados.</p>
             </div>
           </footer>
         </div>
